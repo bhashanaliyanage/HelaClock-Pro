@@ -16,6 +16,7 @@
         android:theme="@style/sflash">
         <activity android:name=".section"></activity>
         <activity android:name=".MainActivity" />
+        <activity android:name=".CPicker" />
         <activity android:name=".widsetting" />
         <activity
             android:name=".clock"

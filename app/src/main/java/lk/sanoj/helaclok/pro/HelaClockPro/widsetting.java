@@ -149,8 +149,10 @@ public class widsetting extends Activity {
         colotchange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(widsetting.this, CPicker.class);
+                widsetting.this.startActivity(intent);
 
-                new ColorPickerPopup.Builder(widsetting.this)
+                /*new ColorPickerPopup.Builder(widsetting.this)
                         .initialColor(Color.RED) // Set initial color
                         .enableBrightness(true) // Enable brightness slider or not
                         .enableAlpha(true) // Enable alpha slider or not
@@ -173,12 +175,14 @@ public class widsetting extends Activity {
                                editor.apply();
                             }
 
-                        });
+                        });*/
 
 
 
             }
         });
+
+
         clearsetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
