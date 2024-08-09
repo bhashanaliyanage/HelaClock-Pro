@@ -43,7 +43,7 @@ public class SinhalaTimeConverter {
                 return "දහය පසුවී";
             case "11":
             case "23":
-                return "එකොළහ පසුවී";
+                return "එකොළහයි";
             case "12":
             case "24":
             case "0":

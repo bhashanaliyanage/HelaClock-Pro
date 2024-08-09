@@ -7,15 +7,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Objects;
 
 import lk.sanoj.helaclok.pro.HelaClockPro.Controller.SinhalaTimeConverter;
 import lk.sanoj.helaclok.pro.HelaClockPro.Models.Clock;
 
 public class section extends AppCompatActivity {
+    // private RemoteViews views;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +29,7 @@ public class section extends AppCompatActivity {
         final TextView textMeridiem = findViewById(R.id.textAM_PM);
         final TextView textHour = findViewById(R.id.textHour);
         final TextView textMinutes = findViewById(R.id.textMinutes);
+        final ImageView hintImage = findViewById(R.id.hintImage);
 
         final Clock clock = new Clock();
         SinhalaTimeConverter converter = new SinhalaTimeConverter(clock.getTime());
@@ -45,17 +47,29 @@ public class section extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                clock.updateTime();
-                                SinhalaTimeConverter converter = new SinhalaTimeConverter(clock.getTime());
+                                try {
+                                    clock.updateTime();
+                                    // clock.setTime("11:30:AM");
+                                    SinhalaTimeConverter converter = new SinhalaTimeConverter(clock.getTime());
 
-                                textHour.setText(converter.getHour());
-                                textMinutes.setText(converter.getMinutes());
-                                textMeridiem.setText(converter.getMeridiem());
+                                    Log.d("Meridiem", clock.getTime().getMeridiem());
+
+                                    textHour.setText(converter.getHour());
+                                    textMinutes.setText(converter.getMinutes());
+                                    textMeridiem.setText(converter.getMeridiem());
+                                    if (clock.getTime().getMeridiem().equals("PM")) {
+                                        hintImage.setImageResource(R.drawable.night);
+                                    } else {
+                                        hintImage.setImageResource(R.drawable.morningimg);
+                                    }
+                                } catch (Exception e) {
+                                    Log.e("Error in section.java", Objects.requireNonNull(e.getMessage()));
+                                }
                             }
                         });
                     }
                 } catch (InterruptedException e) {
-                    Log.e("Error in section.java", e.getMessage());
+                    Log.e("Error in section.java", Objects.requireNonNull(e.getMessage()));
                 }
             }
         };
