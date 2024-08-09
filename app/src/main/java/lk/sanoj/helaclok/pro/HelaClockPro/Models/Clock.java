@@ -10,6 +10,14 @@ public class Clock {
     String datean;
 
     public Clock() {
+        updateTime();
+    }
+
+    public Time getTime() {
+        return new Time(date, datem, datean);
+    }
+
+    public void updateTime() {
         LocalTime now;
         DateTimeFormatter hourFormatter;
         DateTimeFormatter minuteFormatter;
@@ -25,9 +33,5 @@ public class Clock {
             datem = now.format(minuteFormatter);
             datean = now.format(amPmFormatter);
         }
-    }
-
-    public Time getTime() {
-        return new Time(date, datem, datean);
     }
 }
