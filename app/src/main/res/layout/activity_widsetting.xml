@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/layout_oldmain">
@@ -39,11 +38,11 @@
         android:layout_marginStart="75dp"
         android:layout_marginTop="55dp"
         android:layout_marginEnd="89dp"
-        android:text="test"
+        android:text="@string/test"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="@+id/textcolour"
         app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+        app:layout_constraintTop_toBottomOf="@+id/textMinutes" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -54,6 +53,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="28dp"
         android:background="@drawable/sndbackgrund"
+        android:contentDescription="@string/background_image"
         app:layout_constraintBottom_toBottomOf="@+id/codeview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,7 +73,7 @@
         app:layout_constraintTop_toTopOf="@+id/imageView" />
 
     <ImageView
-        android:id="@+id/imageView5"
+        android:id="@+id/hintImage"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
@@ -87,7 +87,7 @@
         app:layout_constraintTop_toTopOf="@+id/imageView" />
 
     <ahmadrosid.com.lib.CustomTextView
-        android:id="@+id/textView4"
+        android:id="@+id/textAM_PM"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="19dp"
@@ -96,11 +96,11 @@
         android:textColor="@color/white"
         android:textSize="@dimen/_23sdp"
         app:fontPath="@string/sinhala"
-        app:layout_constraintStart_toStartOf="@+id/imageView5"
+        app:layout_constraintStart_toStartOf="@+id/hintImage"
         app:layout_constraintTop_toTopOf="@+id/backcolourimag" />
 
     <ahmadrosid.com.lib.CustomTextView
-        android:id="@+id/textView5"
+        android:id="@+id/textHour"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
@@ -108,11 +108,11 @@
         android:textColor="@color/white"
         android:textSize="@dimen/_45sdp"
         app:fontPath="@string/sinhala"
-        app:layout_constraintStart_toStartOf="@+id/textView4"
-        app:layout_constraintTop_toTopOf="@+id/textView4" />
+        app:layout_constraintStart_toStartOf="@+id/textAM_PM"
+        app:layout_constraintTop_toTopOf="@+id/textAM_PM" />
 
     <ahmadrosid.com.lib.CustomTextView
-        android:id="@+id/textView6"
+        android:id="@+id/textMinutes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="17dp"
@@ -121,7 +121,7 @@
         android:textColor="@color/white"
         android:textSize="@dimen/_29sdp"
         app:fontPath="@string/sinhala"
-        app:layout_constraintStart_toStartOf="@+id/imageView5"
+        app:layout_constraintStart_toStartOf="@+id/hintImage"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView

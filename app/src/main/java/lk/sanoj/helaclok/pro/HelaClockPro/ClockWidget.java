@@ -1,7 +1,6 @@
 package lk.sanoj.helaclok.pro.HelaClockPro;
 
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -9,30 +8,19 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
-import android.os.Handler;
-import android.os.Message;
-import android.os.SystemClock;
-import android.text.TextPaint;
 import android.util.Log;
-import android.util.TypedValue;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.graphics.Paint.ANTI_ALIAS_FLAG;
@@ -52,16 +40,13 @@ public class ClockWidget extends AppWidgetProvider {
     private RemoteViews views;
     ComponentName widget;
     private PendingIntent pendingIntent;
-    private int texctcolour;
+    private int textColor01;
     private int sexy;
     private String time;
     private Context con;
-    private int ampmtrack;
-    private int textcolour2;
-    private int hintcontorl;
+    private int amPM_Track;
+    private int textColor02;
     private int click;
-
-
 
 
     public void onEnabled(Context context) {
@@ -70,7 +55,6 @@ public class ClockWidget extends AppWidgetProvider {
     }
 
     public void onReceive(final Context context, Intent intent) {
-
 
 
         String str = "ClockWithHandle";
@@ -83,458 +67,435 @@ public class ClockWidget extends AppWidgetProvider {
         Log.d(str, sb.toString());
 
 
-            if (VERSION.SDK_INT >= 26) {
-                context.startForegroundService(new Intent(context, TickService.class));
+        if (VERSION.SDK_INT >= 26) {
+            context.startForegroundService(new Intent(context, TickService.class));
 
-            } else {
-                context.startService(new Intent(context, TickService.class));
+        } else {
+            context.startService(new Intent(context, TickService.class));
+        }
+
+        assert action != null;
+        if (action.equals("android.appwidget.action.APPWIDGET_UPDATE")) {
+
+            int hintcontorl;
+            try {
+                SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
+                hintcontorl = prefs.getInt("hint", 0);
+            } catch (Exception hint) {
+
+                hintcontorl = 0;
             }
 
-         if (action.equals("android.appwidget.action.APPWIDGET_UPDATE")) {
 
-             try{
-                 SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
-                 hintcontorl = prefs.getInt("hint", 0);
-             }catch (Exception hint){
-
-                 hintcontorl = 0;
-             }
-
-
-
-             if(hintcontorl==1){
-                 this.views = new RemoteViews(context.getPackageName(), R.layout.withouthint);
-             }else if (hintcontorl==0) {
-                 this.views = new RemoteViews(context.getPackageName(), R.layout.hellowidget_layout);
-             }
-
-
-
-
-             //////////////////////////////////////////////////
-
-
-
-
-             String date = new SimpleDateFormat("hh").format(Calendar.getInstance().getTime());
-             String datem = new SimpleDateFormat("mm").format(Calendar.getInstance().getTime());
-             String datean = new SimpleDateFormat("a").format(Calendar.getInstance().getTime());
-
-
-             String imageampm = new SimpleDateFormat("a").format(Calendar.getInstance().getTime());
-             if (imageampm.equals("AM")){
-                 ampmtrack = 1;
-             }else if(imageampm.equals("am")){
-                 ampmtrack = 1;
-             }else if(imageampm.equals("PM")){
-                 ampmtrack = 2;
-             }else if(imageampm.equals("pm")){
-                 ampmtrack = 2;
-             }
-
-
-
-             String imagehh = new SimpleDateFormat("hh").format(Calendar.getInstance().getTime());
-
-
-
-             
-
-
-
-             try {
-
-                 SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
-                 sexy = prefs.getInt("bcolour", 0);
-             } catch (Exception e) {
-
-             }
-
-
-
-             try{
-
-                 //views.setInt(R.id.back, "setBackgroundColor", android.graphics.Color.BLACK); //(Color.parseColor(cccc));
-                 views.setInt(R.id.back, "setBackgroundColor", sexy);
-             }catch (Exception ty){
-
-
-             }
-
-
-
-
-             ///////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-             if(hintcontorl==1){
-
-                 //
-                 views.setViewVisibility(R.id.status, INVISIBLE);
-
-             }else if(hintcontorl==0){
-                 views.setViewVisibility(R.id.status, VISIBLE);
-                 if(ampmtrack==1){
-                     //views.setImageViewResource(R.id.status, R.drawable.after);
-
-                     if(imagehh.equals("00")){
-                         views.setImageViewResource(R.id.status, R.drawable.night);
-                     }
-                     else if(imagehh.equals("12")){
-                         views.setImageViewResource(R.id.status, R.drawable.night);
-                     }
-                     else if(imagehh.equals("01")){
-                         views.setImageViewResource(R.id.status, R.drawable.night);
-                     }
-                     else if(imagehh.equals("02")){
-                         views.setImageViewResource(R.id.status, R.drawable.night);
-                     }
-                     else if(imagehh.equals("03")){
-                         views.setImageViewResource(R.id.status, R.drawable.night);
-                     }
-                     else if(imagehh.equals("04")){
-                         views.setImageViewResource(R.id.status, R.drawable.night);
-                     }
-                     else if(imagehh.equals("05")){
-                         views.setImageViewResource(R.id.status, R.drawable.night);
-                     }
-                     else if(imagehh.equals("06")){
-                         views.setImageViewResource(R.id.status, R.drawable.morningimg);
-                     }
-                     else if(imagehh.equals("07")){
-                         views.setImageViewResource(R.id.status, R.drawable.morningimg);
-                     }
-                     else if(imagehh.equals("08")){
-                         views.setImageViewResource(R.id.status, R.drawable.morningimg);
-                     }
-                     else if(imagehh.equals("09")){
-                         views.setImageViewResource(R.id.status, R.drawable.morningimg);
-                     }
-                     else if(imagehh.equals("10")){
-                         views.setImageViewResource(R.id.status, R.drawable.morningimg);
-                     }
-                     else if(imagehh.equals("11")){
-                         views.setImageViewResource(R.id.status, R.drawable.morningimg);
-                     }
-
-                 }
-
-                 if (ampmtrack==2){
-                     if(imagehh.equals("00")){
-                         views.setImageViewResource(R.id.status, R.drawable.after);
-                     }
-                     else if(imagehh.equals("12")){
-                         views.setImageViewResource(R.id.status, R.drawable.after);
-                     }
-                     else if(imagehh.equals("01")){
-                         views.setImageViewResource(R.id.status, R.drawable.after);
-                     }
-                     else if(imagehh.equals("02")){
-                         views.setImageViewResource(R.id.status, R.drawable.after);
-                     }
-                     else if(imagehh.equals("03")){
-                         views.setImageViewResource(R.id.status, R.drawable.after);
-                     }
-                     else if(imagehh.equals("04")){
-                         views.setImageViewResource(R.id.status, R.drawable.after);
-                     }
-                     else if(imagehh.equals("05")){
-                         views.setImageViewResource(R.id.status, R.drawable.after);
-                     }
-                     else if(imagehh.equals("06")){
-                         views.setImageViewResource(R.id.status, R.drawable.after);
-                     }
-                     else if(imagehh.equals("07")){
-                         views.setImageViewResource(R.id.status, R.drawable.after);
-                     }
-                     else if(imagehh.equals("08")){
-                         views.setImageViewResource(R.id.status, R.drawable.night);
-                     }
-                     else if(imagehh.equals("09")){
-                         views.setImageViewResource(R.id.status, R.drawable.night);
-                     }
-                     else if(imagehh.equals("10")){
-                         views.setImageViewResource(R.id.status, R.drawable.night);
-                     }
-                     else if(imagehh.equals("11")){
-                         views.setImageViewResource(R.id.status, R.drawable.night);
-                     }
-                 }
-             }
-
-
-
-
-
-
-
-             ////////////////////////////////////////////////////////////////////////////////////////
-
-             ///////////////////////////////////////////////////////////////////////////////////////
-
-             if (datean.equals("am")){
-                 views.setImageViewBitmap(R.id.AMPM, textAsBitmap(context, "වේලාව පෙරවරු",220));
-             }else if (datean.equals("AM")){
-                 views.setImageViewBitmap(R.id.AMPM, textAsBitmap(context, "වේලාව පෙරවරු",220));
-             }else if (datean.equals("pm")){
-                 views.setImageViewBitmap(R.id.AMPM, textAsBitmap(context, "වේලාව පස්වරු",220));
-             }else if(datean.equals("PM")){
-                 views.setImageViewBitmap(R.id.AMPM, textAsBitmap(context, "වේලාව පස්වරු",220));
-             }
-
-
-
-
-             ///////////////////////////////////////////////////////////////////////////////////////
-             ///////////////////////////////////////////////////////////////////////////////////////
-             if(date.equals("01")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "එක පසුවී"));
-             }else if (date.equals("02")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"දෙක පසුවී"));
-             }else if (date.equals("03")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"තුන පසුවී"));
-             }else if (date.equals("04")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"හතර පසුවී"));
-             }else if (date.equals("05")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"පහ පසුවී"));
-             }else if (date.equals("06")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"හය පසුවී"));
-             }else if (date.equals("07")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"හත පසුවී"));
-             }else if (date.equals("08")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"අට පසුවී"));
-             }else if (date.equals("09")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"නවය පසුවී"));
-             }else if (date.equals("10")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"දහය පසුවී"));
-             }else if (date.equals("11")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"එකොළහ පසුවී"));
-             }else if (date.equals("12")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"දොළහ පසුවී"));
-             }else if (date.equals("13")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"එක පසුවී"));
-             }else if (date.equals("14")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"දෙක පසුවී"));
-             }else if (date.equals("15")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"තුන පසුවී"));
-             }else if (date.equals("16")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"හතර පසුවී"));
-             }else if (date.equals("17")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"පහ පසුවී"));
-             }else if (date.equals("18")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"හය පසුවී"));
-             }else if (date.equals("19")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"හත පසුවී"));
-             }else if (date.equals("20")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"අට පසුවී"));
-             }else if (date.equals("21")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"නවය පසුවී"));
-             }else if (date.equals("22")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"නවය පසුවී"));
-             }else if (date.equals("23")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"එකොළහ පසුවී"));
-             }else if (date.equals("24")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"දොළහ පසුවී"));
-             }else if (date.equals("0")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"දොළහ පසුවී"));
-             }else if (date.equals("00")){
-                 views.setImageViewBitmap(R.id.hou, textAsBitmap2(context,"දොළහ පසුවී"));
-             }
-
-
-
-             ///////////////////////////////////////////////////////////////////////////////////////
-
-             //if (datem.equals("0")){
-             // views.setImageViewBitmap(R.id.textView5, ("තත්පර කීපයක් පමනයි"));
-             // }else if (datem.equals("00")){
-             //    views.setImageViewBitmap(R.id.textView5, ("තත්පර කීපයක් පමනයි"));
-             // }else{
-             //   views.setImageViewBitmap(R.id.textView5, ("විනාඩි"));
-             // }
-
-             /////////////////////////////////////////////////////////////////////////////////////
-             if (datem.equals("0")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"තත්පර කීපයක් පමනයි"));
-             }else if (datem.equals("00")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"තත්පර කීපයක් පමනයි"));
-             }else if (datem.equals("01")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි එකයි"));
-             }else if (datem.equals("02")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි දෙකයි"));
-             }else if (datem.equals("03")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි තුනයි"));
-             }else if (datem.equals("04")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හතරයි"));
-             }else if (datem.equals("05")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි පහයි"));
-             }else if (datem.equals("06")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හයයි"));
-             }else if (datem.equals("07")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හතයි"));
-             }else if (datem.equals("08")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි අටයි"));
-             }else if (datem.equals("09")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි නවයයි"));
-             }else if (datem.equals("10")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි දහයයි"));
-             }else if (datem.equals("11")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි එකොළහයි"));
-             }else if (datem.equals("12")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි දොළහයි"));
-             }else if (datem.equals("13")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි දහ තුනයි"));
-             }else if (datem.equals("14")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි දහ හතරයි"));
-             }else if (datem.equals("15")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි පහ ලොවයි"));
-             }else if (datem.equals("16")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි දහ සයයි"));
-             }else if (datem.equals("17")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි දහ හතයි"));
-             }else if (datem.equals("18")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි දහ අටයි"));
-             }else if (datem.equals("19")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි දහ නවයයි"));
-             }else if (datem.equals("20")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි විස්සයි"));
-             }else if (datem.equals("21")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි විසීඑකයි"));
-             }else if (datem.equals("22")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි විසිදෙකයි"));
-             }else if (datem.equals("23")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි විසිතුනයී"));
-             }else if (datem.equals("24")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි විසිහතරයි"));
-             }else if (datem.equals("25")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි විසිපහයි"));
-             }else if (datem.equals("26")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි විසිහයයි"));
-             }else if (datem.equals("27")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි විසිහතයි"));
-             }else if (datem.equals("28")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි විසිඅටයි"));
-             }else if (datem.equals("29")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි විසිනවයයි"));
-             }else if (datem.equals("30")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි තිහයි"));
-             }else if (datem.equals("31")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි තිස්එකයි"));
-             }else if (datem.equals("32")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි තිස්දෙකයි"));
-             }else if (datem.equals("33")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි තිස්තුනයි"));
-             }else if (datem.equals("34")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි තිස්හතරයි"));
-             }else if (datem.equals("35")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි තිස්පහයි"));
-             }else if (datem.equals("36")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි තිස්හයයි"));
-             }else if (datem.equals("37")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි තිස්හතයි"));
-             }else if (datem.equals("38")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි තිස්අටයි"));
-             }else if (datem.equals("39")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි තිස්නවයයි"));
-             }else if (datem.equals("40")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හතලිහයි"));
-             }else if (datem.equals("41")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හතලිස් එකයි"));
-             }else if (datem.equals("42")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හතලිස් දෙකයි"));
-             }else if (datem.equals("43")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හතලිස් තුනයි"));
-             }else if (datem.equals("44")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හතලිස් හතරයි"));
-             }else if (datem.equals("45")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හතලිස් පහයි"));
-             }else if (datem.equals("46")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හතලිස් හයයි"));
-             }else if (datem.equals("47")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හතලිස් හතයි"));
-             }else if (datem.equals("48")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හතලිස් අටයි"));
-             }else if (datem.equals("49")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි හතලිස් නවයය"));
-             }else if (datem.equals("50")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි පනහයි"));
-             }else if (datem.equals("51")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි පනස් එකයි"));
-             }else if (datem.equals("52")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි පනස් දෙකයි"));
-             }else if (datem.equals("53")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි පනස් තුනයි"));
-             }else if (datem.equals("54")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි පනස් හතරයි"));
-             }else if (datem.equals("55")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි පනස් පහයි"));
-             }else if (datem.equals("56")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි පනස් හයයි"));
-             }else if (datem.equals("57")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි පනස් හතයි"));
-             }else if (datem.equals("58")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි පනස් අටයි"));
-             }else if (datem.equals("59")){
-                 views.setImageViewBitmap(R.id.mini, textAsBitmap2(context,"විනාඩි පනස් නවයයි"));
-             }
-
-
-
-             Intent intents = new Intent(context, widsetting.class);
-             intent.setAction("Click");
-             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intents, 0);
-             views.setOnClickPendingIntent(R.id.myRelativeLayout, pendingIntent);
-
-
-
-
-
-
-             this.widget = new ComponentName(context, ClockWidget.class);
-             this.appWidgetManager = AppWidgetManager.getInstance(context);
-             this.appWidgetManager.updateAppWidget(this.widget, this.views);
-
+            if (hintcontorl == 1) {
+                this.views = new RemoteViews(context.getPackageName(), R.layout.withouthint);
+            } else if (hintcontorl == 0) {
+                this.views = new RemoteViews(context.getPackageName(), R.layout.hellowidget_layout);
+            }
+
+
+            //////////////////////////////////////////////////
+
+
+            String date = new SimpleDateFormat("hh").format(Calendar.getInstance().getTime());
+            String datem = new SimpleDateFormat("mm").format(Calendar.getInstance().getTime());
+            String datean = new SimpleDateFormat("a").format(Calendar.getInstance().getTime());
+
+
+            String clockAM_PM = new SimpleDateFormat("a").format(Calendar.getInstance().getTime());
+            switch (clockAM_PM) {
+                case "AM":
+                case "am":
+                    amPM_Track = 1;
+                    break;
+                case "PM":
+                case "pm":
+                    amPM_Track = 2;
+                    break;
+            }
+
+            String imagehh = new SimpleDateFormat("hh").format(Calendar.getInstance().getTime());
+
+            try {
+
+                SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
+                sexy = prefs.getInt("bcolour", 0);
+            } catch (Exception ignored) {
+
+            }
+
+            try {
+                //views.setInt(R.id.back, "setBackgroundColor", android.graphics.Color.BLACK); //(Color.parseColor(cccc));
+                views.setInt(R.id.back, "setBackgroundColor", sexy);
+            } catch (Exception ignored) {
+
+
+            }
+
+
+            ///////////////////////////////////////////////////////////////////////////////////////
+
+
+            if (hintcontorl == 1) {
+
+                //
+                views.setViewVisibility(R.id.status, INVISIBLE);
+
+            } else if (hintcontorl == 0) {
+                views.setViewVisibility(R.id.status, VISIBLE);
+                if (amPM_Track == 1) {
+                    //views.setImageViewResource(R.id.status, R.drawable.after);
+
+                    if (imagehh.equals("00")) {
+                        views.setImageViewResource(R.id.status, R.drawable.night);
+                    } else if (imagehh.equals("12")) {
+                        views.setImageViewResource(R.id.status, R.drawable.night);
+                    } else if (imagehh.equals("01")) {
+                        views.setImageViewResource(R.id.status, R.drawable.night);
+                    } else if (imagehh.equals("02")) {
+                        views.setImageViewResource(R.id.status, R.drawable.night);
+                    } else if (imagehh.equals("03")) {
+                        views.setImageViewResource(R.id.status, R.drawable.night);
+                    } else if (imagehh.equals("04")) {
+                        views.setImageViewResource(R.id.status, R.drawable.night);
+                    } else if (imagehh.equals("05")) {
+                        views.setImageViewResource(R.id.status, R.drawable.night);
+                    } else if (imagehh.equals("06")) {
+                        views.setImageViewResource(R.id.status, R.drawable.morningimg);
+                    } else if (imagehh.equals("07")) {
+                        views.setImageViewResource(R.id.status, R.drawable.morningimg);
+                    } else if (imagehh.equals("08")) {
+                        views.setImageViewResource(R.id.status, R.drawable.morningimg);
+                    } else if (imagehh.equals("09")) {
+                        views.setImageViewResource(R.id.status, R.drawable.morningimg);
+                    } else if (imagehh.equals("10")) {
+                        views.setImageViewResource(R.id.status, R.drawable.morningimg);
+                    } else if (imagehh.equals("11")) {
+                        views.setImageViewResource(R.id.status, R.drawable.morningimg);
+                    }
+
+                }
+
+                if (amPM_Track == 2) {
+                    switch (imagehh) {
+                        case "00":
+                        case "12":
+                        case "01":
+                        case "02":
+                        case "03":
+                        case "04":
+                        case "05":
+                        case "06":
+                        case "07":
+                            views.setImageViewResource(R.id.status, R.drawable.after);
+                            break;
+                        case "08":
+                        case "09":
+                        case "10":
+                        case "11":
+                            views.setImageViewResource(R.id.status, R.drawable.night);
+                            break;
+                    }
+                }
+            }
+
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+
+            ///////////////////////////////////////////////////////////////////////////////////////
+
+            switch (datean) {
+                case "am":
+                case "AM":
+                    views.setImageViewBitmap(R.id.AMPM, textAsBitmap(context, "වේලාව පෙරවරු", 220));
+                    break;
+                case "pm":
+                case "PM":
+                    views.setImageViewBitmap(R.id.AMPM, textAsBitmap(context, "වේලාව පස්වරු", 220));
+                    break;
+            }
+
+
+            ///////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////////////
+            switch (date) {
+                case "01":
+                case "13":
+                    views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "එක පසුවී"));
+                    break;
+                case "02":
+                case "14":
+                    views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "දෙක පසුවී"));
+                    break;
+                case "03":
+                case "15":
+                    views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "තුන පසුවී"));
+                    break;
+                case "04":
+                case "16":
+                    views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "හතර පසුවී"));
+                    break;
+                case "05":
+                case "17":
+                    views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "පහ පසුවී"));
+                    break;
+                case "06":
+                case "18":
+                    views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "හය පසුවී"));
+                    break;
+                case "07":
+                case "19":
+                    views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "හත පසුවී"));
+                    break;
+                case "08":
+                case "20":
+                    views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "අට පසුවී"));
+                    break;
+                case "09":
+                case "21":
+                case "22":
+                    views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "නවය පසුවී"));
+                    break;
+                case "10":
+                    views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "දහය පසුවී"));
+                    break;
+                case "11":
+                case "23":
+                    views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "එකොළහ පසුවී"));
+                    break;
+                case "12":
+                case "24":
+                case "0":
+                case "00":
+                    views.setImageViewBitmap(R.id.hou, textAsBitmap2(context, "දොළහ පසුවී"));
+                    break;
+            }
+
+            switch (datem) {
+                case "0":
+                case "00":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "තත්පර කීපයක් පමනයි"));
+                    break;
+                case "01":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි එකයි"));
+                    break;
+                case "02":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි දෙකයි"));
+                    break;
+                case "03":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි තුනයි"));
+                    break;
+                case "04":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හතරයි"));
+                    break;
+                case "05":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි පහයි"));
+                    break;
+                case "06":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හයයි"));
+                    break;
+                case "07":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හතයි"));
+                    break;
+                case "08":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි අටයි"));
+                    break;
+                case "09":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි නවයයි"));
+                    break;
+                case "10":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි දහයයි"));
+                    break;
+                case "11":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි එකොළහයි"));
+                    break;
+                case "12":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි දොළහයි"));
+                    break;
+                case "13":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි දහ තුනයි"));
+                    break;
+                case "14":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි දහ හතරයි"));
+                    break;
+                case "15":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි පහ ලොවයි"));
+                    break;
+                case "16":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි දහ සයයි"));
+                    break;
+                case "17":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි දහ හතයි"));
+                    break;
+                case "18":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි දහ අටයි"));
+                    break;
+                case "19":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි දහ නවයයි"));
+                    break;
+                case "20":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි විස්සයි"));
+                    break;
+                case "21":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි විසීඑකයි"));
+                    break;
+                case "22":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි විසිදෙකයි"));
+                    break;
+                case "23":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි විසිතුනයී"));
+                    break;
+                case "24":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි විසිහතරයි"));
+                    break;
+                case "25":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි විසිපහයි"));
+                    break;
+                case "26":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි විසිහයයි"));
+                    break;
+                case "27":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි විසිහතයි"));
+                    break;
+                case "28":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි විසිඅටයි"));
+                    break;
+                case "29":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි විසිනවයයි"));
+                    break;
+                case "30":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි තිහයි"));
+                    break;
+                case "31":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි තිස්එකයි"));
+                    break;
+                case "32":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි තිස්දෙකයි"));
+                    break;
+                case "33":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි තිස්තුනයි"));
+                    break;
+                case "34":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි තිස්හතරයි"));
+                    break;
+                case "35":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි තිස්පහයි"));
+                    break;
+                case "36":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි තිස්හයයි"));
+                    break;
+                case "37":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි තිස්හතයි"));
+                    break;
+                case "38":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි තිස්අටයි"));
+                    break;
+                case "39":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි තිස්නවයයි"));
+                    break;
+                case "40":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හතලිහයි"));
+                    break;
+                case "41":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හතලිස් එකයි"));
+                    break;
+                case "42":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හතලිස් දෙකයි"));
+                    break;
+                case "43":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හතලිස් තුනයි"));
+                    break;
+                case "44":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හතලිස් හතරයි"));
+                    break;
+                case "45":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හතලිස් පහයි"));
+                    break;
+                case "46":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හතලිස් හයයි"));
+                    break;
+                case "47":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හතලිස් හතයි"));
+                    break;
+                case "48":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හතලිස් අටයි"));
+                    break;
+                case "49":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි හතලිස් නවයය"));
+                    break;
+                case "50":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි පනහයි"));
+                    break;
+                case "51":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි පනස් එකයි"));
+                    break;
+                case "52":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි පනස් දෙකයි"));
+                    break;
+                case "53":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි පනස් තුනයි"));
+                    break;
+                case "54":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි පනස් හතරයි"));
+                    break;
+                case "55":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි පනස් පහයි"));
+                    break;
+                case "56":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි පනස් හයයි"));
+                    break;
+                case "57":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි පනස් හතයි"));
+                    break;
+                case "58":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි පනස් අටයි"));
+                    break;
+                case "59":
+                    views.setImageViewBitmap(R.id.mini, textAsBitmap2(context, "විනාඩි පනස් නවයයි"));
+                    break;
+            }
+
+
+            Intent intents = new Intent(context, widsetting.class);
+            intent.setAction("Click");
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intents, 0);
+            views.setOnClickPendingIntent(R.id.myRelativeLayout, pendingIntent);
+
+            this.widget = new ComponentName(context, ClockWidget.class);
+            this.appWidgetManager = AppWidgetManager.getInstance(context);
+            this.appWidgetManager.updateAppWidget(this.widget, this.views);
 
         }
     }
 
     public void onDeleted(Context context, int[] iArr) {
         super.onDeleted(context, iArr);
-        StringBuilder sb = new StringBuilder();
-        sb.append("onDeleted ");
-        sb.append(Arrays.toString(iArr));
-        Log.d("ClockWithHandle", sb.toString());
+        String sb = "onDeleted " +
+                Arrays.toString(iArr);
+        Log.d("ClockWithHandle", sb);
     }
 
-    public Bitmap textAsBitmap(Context context,String time, int fontsiz) {
-
-
+    public Bitmap textAsBitmap(Context context, String time, int fontSize) {
         try {
 
             SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
-            textcolour2 = prefs.getInt("textc", 0);
+            textColor02 = prefs.getInt("textc", 0);
 
-            if(textcolour2==0){
-                texctcolour = Color.WHITE;
-            }else {
-                texctcolour = textcolour2;
+            if (textColor02 == 0) {
+                textColor01 = Color.WHITE;
+            } else {
+                textColor01 = textColor02;
             }
 
         } catch (Exception e) {
-            texctcolour = Color.WHITE;
+            textColor01 = Color.WHITE;
         }
 
 
         Paint paint = new Paint(ANTI_ALIAS_FLAG);
-        paint.setTextSize(fontsiz);
-        Typeface clock = Typeface.createFromAsset(context.getAssets(),"emanee.ttf");
-        paint.setColor(texctcolour);
+        paint.setTextSize(fontSize);
+        Typeface clock = Typeface.createFromAsset(context.getAssets(), "emanee.ttf");
+        paint.setColor(textColor01);
         paint.setTypeface(clock);
         paint.setTextAlign(Paint.Align.LEFT);
         float baseline = -paint.ascent(); // ascent() is negative
@@ -546,27 +507,27 @@ public class ClockWidget extends AppWidgetProvider {
         return image;
     }
 
-    public Bitmap textAsBitmap2(Context context,String time) {
+    public Bitmap textAsBitmap2(Context context, String time) {
 
         try {
 
             SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
-            textcolour2 = prefs.getInt("textc", 0);
+            textColor02 = prefs.getInt("textc", 0);
 
-            if(textcolour2==0){
-                texctcolour = Color.WHITE;
-            }else {
-                texctcolour = textcolour2;
+            if (textColor02 == 0) {
+                textColor01 = Color.WHITE;
+            } else {
+                textColor01 = textColor02;
             }
 
 
         } catch (Exception e) {
-            texctcolour = Color.WHITE;
+            textColor01 = Color.WHITE;
         }
         Paint paint = new Paint(ANTI_ALIAS_FLAG);
         paint.setTextSize(195);
-        Typeface clock = Typeface.createFromAsset(context.getAssets(),"emanee.ttf");
-        paint.setColor(texctcolour);
+        Typeface clock = Typeface.createFromAsset(context.getAssets(), "emanee.ttf");
+        paint.setColor(textColor01);
         paint.setTypeface(clock);
         paint.setAntiAlias(true);
         paint.setSubpixelText(true);
@@ -579,29 +540,6 @@ public class ClockWidget extends AppWidgetProvider {
         canvas.drawText(time, 0, baseline, paint);
         return image;
     }
-
-    public static Bitmap drawableToBitmap (Drawable drawable) {
-        Bitmap bitmap = null;
-
-        if (drawable instanceof BitmapDrawable) {
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            if(bitmapDrawable.getBitmap() != null) {
-                return bitmapDrawable.getBitmap();
-            }
-        }
-
-        if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
-        } else {
-            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        }
-
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
-    }
-
 
 
     public void onDisabled(Context context) {

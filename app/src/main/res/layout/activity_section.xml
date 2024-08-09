@@ -13,17 +13,18 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageView5"
+            android:id="@+id/hintImage"
             android:layout_width="0dp"
             android:layout_height="230dp"
             android:layout_marginTop="80dp"
             android:background="@drawable/morningimg_view"
+            android:contentDescription="@string/hint_image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ahmadrosid.com.lib.CustomTextView
-            android:id="@+id/textView4"
+            android:id="@+id/textAM_PM"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -32,11 +33,11 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_23sdp"
             app:fontPath="@string/sinhala"
-            app:layout_constraintStart_toStartOf="@+id/imageView5"
-            app:layout_constraintTop_toTopOf="@+id/imageView5" />
+            app:layout_constraintStart_toStartOf="@+id/hintImage"
+            app:layout_constraintTop_toTopOf="@+id/hintImage" />
 
         <ahmadrosid.com.lib.CustomTextView
-            android:id="@+id/textView5"
+            android:id="@+id/textHour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
@@ -44,11 +45,11 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_45sdp"
             app:fontPath="@string/sinhala"
-            app:layout_constraintStart_toStartOf="@+id/textView4"
-            app:layout_constraintTop_toTopOf="@+id/textView4" />
+            app:layout_constraintStart_toStartOf="@+id/textAM_PM"
+            app:layout_constraintTop_toTopOf="@+id/textAM_PM" />
 
         <ahmadrosid.com.lib.CustomTextView
-            android:id="@+id/textView6"
+            android:id="@+id/textMinutes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -56,8 +57,8 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_29sdp"
             app:fontPath="@string/sinhala"
-            app:layout_constraintStart_toStartOf="@+id/imageView5"
-            app:layout_constraintTop_toBottomOf="@+id/textView5" />
+            app:layout_constraintStart_toStartOf="@+id/hintImage"
+            app:layout_constraintTop_toBottomOf="@+id/textHour" />
 
         <LinearLayout
             android:id="@+id/linearLayout"

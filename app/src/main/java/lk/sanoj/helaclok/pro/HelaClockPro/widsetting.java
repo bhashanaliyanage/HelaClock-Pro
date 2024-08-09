@@ -60,15 +60,15 @@ public class widsetting extends Activity {
 
         colotchange = findViewById(R.id.textcolour);
         codeview = findViewById(R.id.codeview);
-        textView4 = findViewById(R.id.textView4);
-        textView5 = findViewById(R.id.textView5);
-        textView6 = findViewById(R.id.textView6);
+        textView4 = findViewById(R.id.textAM_PM);
+        textView5 = findViewById(R.id.textHour);
+        textView6 = findViewById(R.id.textMinutes);
         show = findViewById(R.id.imageView);
         backgraund = findViewById(R.id.backgraund);
         backcode = findViewById(R.id.back);
         backimage = findViewById(R.id.backcolourimag);
         onoff = findViewById(R.id.switch1);
-        hintview = findViewById(R.id.imageView5);
+        hintview = findViewById(R.id.hintImage);
         clearsetting = findViewById(R.id.reset);
         ynoty = findViewById(R.id.clnoty);
 

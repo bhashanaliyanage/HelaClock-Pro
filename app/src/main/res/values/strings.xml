@@ -9,4 +9,7 @@
     <string name="bakcolou">Backgrund Colour</string>
     <string name="Hint">Hint ON</string>
     <string name="resetstn">Reset Setting</string>
+    <string name="hint_image">Hint Image</string>
+    <string name="test">test</string>
+    <string name="background_image">Background Image</string>
 </resources>
