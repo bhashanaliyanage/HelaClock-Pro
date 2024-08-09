@@ -18,16 +18,16 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class ColorPickerPopup {
 
-    private Context context;
+    private final Context context;
     private PopupWindow popupWindow;
-    private int initialColor;
-    private boolean enableBrightness;
-    private boolean enableAlpha;
-    private String okTitle;
-    private String cancelTitle;
-    private boolean showIndicator;
-    private boolean showValue;
-    private boolean onlyUpdateOnTouchEventUp;
+    private final int initialColor;
+    private final boolean enableBrightness;
+    private final boolean enableAlpha;
+    private final String okTitle;
+    private final String cancelTitle;
+    private final boolean showIndicator;
+    private final boolean showValue;
+    private final boolean onlyUpdateOnTouchEventUp;
 
     private ColorPickerPopup(Builder builder) {
         this.context = builder.context;
@@ -122,7 +122,7 @@ public class ColorPickerPopup {
 
     public static class Builder {
 
-        private Context context;
+        private final Context context;
         private int initialColor = Color.MAGENTA;
         private boolean enableBrightness = true;
         private boolean enableAlpha = false;
@@ -194,7 +194,7 @@ public class ColorPickerPopup {
         public abstract void onColorPicked(int color);
 
         @Override
-        public final void onColor(int color, boolean fromUser, boolean shouldPropagate) {
+        public void onColor(int color, boolean fromUser, boolean shouldPropagate) {
 
         }
     }
