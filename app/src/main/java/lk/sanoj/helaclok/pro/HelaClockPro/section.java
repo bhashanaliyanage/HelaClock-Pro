@@ -2,13 +2,19 @@ package lk.sanoj.helaclok.pro.HelaClockPro;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
@@ -17,6 +23,11 @@ import lk.sanoj.helaclok.pro.HelaClockPro.Models.Clock;
 
 public class section extends AppCompatActivity {
     // private RemoteViews views;
+    private Dialog dialog;
+    CheckBox cbBlank;
+    CheckBox cbPattern;
+    CheckBox cbGrunge;
+    CheckBox cbRock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,14 +90,14 @@ public class section extends AppCompatActivity {
         // TODO: Make the hint image changeable.
         // TODO: Enable disable the hint image according to user preferences
 
-        btn1.setOnClickListener(new View.OnClickListener() {
+        /*btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent mainIntent = new Intent(section.this, MainActivity.class);
                 section.this.startActivity(mainIntent);
 
             }
-        });
+        });*/
 
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +107,156 @@ public class section extends AppCompatActivity {
             }
         });
 
+        createDialog();
+    }
 
+    private void createDialog() {
+        dialog = new Dialog(section.this);
+        dialog.setContentView(R.layout.clock_settings);
+        Objects.requireNonNull(dialog.getWindow()).setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            dialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.dialog_bg));
+        }
+        dialog.setCancelable(true);
+
+        // Set CheckBoxes
+        cbBlank = dialog.findViewById(R.id.checkBoxBlank);
+        cbPattern = dialog.findViewById(R.id.checkBoxPattern);
+        cbGrunge = dialog.findViewById(R.id.checkBoxGrunge);
+        cbRock = dialog.findViewById(R.id.checkBoxRock);
+
+        // Set User Settings
+        try {
+            SharedPreferences prefs = this.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
+            String themes = prefs.getString("ThemeName", null);
+
+            assert themes != null;
+            switch (themes) {
+                case "AssXSDrrfgssdbh":
+                    cbBlank.setChecked(true);
+                    break;
+                case "WdhbgfhghhdwaSSDfgdfg":
+                    cbPattern.setChecked(true);
+                    break;
+                case "HlknsdakjKJHfdskljhs":
+                    cbGrunge.setChecked(true);
+                    break;
+                case "dAsdsQWdsfdSDfdsfS":
+                    cbRock.setChecked(true);
+                    break;
+            }
+        } catch (Exception e) {
+            SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
+            editor.putString("ThemeName", "AssXSDrrfgssdbh");
+            editor.apply();
+            cbBlank.setChecked(true);
+        }
+    }
+
+    public void clockSettings(View view) {
+        Log.d("Clock Settings", "Clock Settings");
+        dialog.show();
+    }
+
+    public void clockSettingBlank(View v) {
+        SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
+        editor.putString("ThemeName", "AssXSDrrfgssdbh");
+        editor.apply();
+        cbPattern.setChecked(false);
+        cbGrunge.setChecked(false);
+        cbRock.setChecked(false);
+    }
+
+    public void clockSettingPattern(View v) {
+        SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
+        editor.putString("ThemeName", "WdhbgfhghhdwaSSDfgdfg");
+        editor.apply();
+        cbBlank.setChecked(false);
+        cbGrunge.setChecked(false);
+        cbRock.setChecked(false);
+    }
+
+    public void clockSettingGrunge(View v) {
+        SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
+        editor.putString("ThemeName", "HlknsdakjKJHfdskljhs");
+        editor.apply();
+        cbBlank.setChecked(false);
+        cbPattern.setChecked(false);
+        cbRock.setChecked(false);
+    }
+
+    public void clockSettingRock(View v) {
+        SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
+        editor.putString("ThemeName", "dAsdsQWdsfdSDfdsfS");
+        editor.apply();
+        cbBlank.setChecked(false);
+        cbPattern.setChecked(false);
+        cbGrunge.setChecked(false);
+    }
+
+    public void onSaveChanges(View view) {
+        if (cbBlank.isChecked()) {
+            SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
+            editor.putString("ThemeName", "AssXSDrrfgssdbh");
+            editor.apply();
+            cbPattern.setChecked(false);
+            cbGrunge.setChecked(false);
+            cbRock.setChecked(false);
+            Snackbar.make(section.this.findViewById(R.id.linearLayout), "Applied Setting: Blank", Snackbar.LENGTH_SHORT).show();
+        } else if (cbPattern.isChecked()) {
+            SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
+            editor.putString("ThemeName", "WdhbgfhghhdwaSSDfgdfg");
+            editor.apply();
+            cbBlank.setChecked(false);
+            cbGrunge.setChecked(false);
+            cbRock.setChecked(false);
+            Snackbar.make(section.this.findViewById(R.id.linearLayout), "Applied Setting: Pattern", Snackbar.LENGTH_SHORT).show();
+        } else if (cbGrunge.isChecked()) {
+            SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
+            editor.putString("ThemeName", "HlknsdakjKJHfdskljhs");
+            editor.apply();
+            cbBlank.setChecked(false);
+            cbPattern.setChecked(false);
+            cbRock.setChecked(false);
+            Snackbar.make(section.this.findViewById(R.id.linearLayout), "Applied Setting: Grunge", Snackbar.LENGTH_SHORT).show();
+        } else if (cbRock.isChecked()) {
+            SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
+            editor.putString("ThemeName", "dAsdsQWdsfdSDfdsfS");
+            editor.apply();
+            cbBlank.setChecked(false);
+            cbPattern.setChecked(false);
+            cbGrunge.setChecked(false);
+            Snackbar.make(section.this.findViewById(R.id.linearLayout), "Applied Setting: Rock Wall", Snackbar.LENGTH_SHORT).show();
+        }
+
+        dialog.dismiss();
+    }
+
+    public void checkBoxBlank(View view) {
+        cbPattern.setChecked(false);
+        cbGrunge.setChecked(false);
+        cbRock.setChecked(false);
+    }
+
+    public void checkBoxPattern(View view) {
+        cbBlank.setChecked(false);
+        cbGrunge.setChecked(false);
+        cbRock.setChecked(false);
+    }
+
+    public void checkBoxGrunge(View view) {
+        cbBlank.setChecked(false);
+        cbPattern.setChecked(false);
+        cbRock.setChecked(false);
+    }
+
+    public void checkBoxRock(View view) {
+        cbBlank.setChecked(false);
+        cbPattern.setChecked(false);
+        cbGrunge.setChecked(false);
+    }
+
+    public void startClock(View view) {
+        startActivity(new Intent(section.this, clock.class));
     }
 }

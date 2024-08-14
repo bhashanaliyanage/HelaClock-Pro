@@ -109,7 +109,7 @@ public class ClockWidget extends AppWidgetProvider {
             }
 
             try {
-                //views.setInt(R.id.back, "setBackgroundColor", android.graphics.Color.BLACK); //(Color.parseColor(cccc));
+                //views.setInt(R.id.back, "setBackgroundColor", android.graphics.Color.BLACK); //(Color.parseColor(clockSettingGrunge));
                 views.setInt(R.id.back, "setBackgroundColor", sexy);
             } catch (Exception ignored) {
 

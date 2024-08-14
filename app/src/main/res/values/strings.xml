@@ -4,7 +4,7 @@
     <string name="theme">මුහුණුවර ‍තෝරන්න</string>
     <string name="maintext">සිංහල ඔරලෝසුව</string>
     <string name="widhed">Widget Settings</string>
-    <string name="textcolour">Change Text Colour</string>
+    <string name="textColour">Change Text Colour</string>
     <string name="sinhala">fonts/emanee.ttf</string>
     <string name="bakcolou">Backgrund Colour</string>
     <string name="Hint">Hint ON</string>
@@ -12,4 +12,16 @@
     <string name="hint_image">Hint Image</string>
     <string name="test">test</string>
     <string name="background_image">Background Image</string>
+    <string name="desk_clock_btn">Desk Clock</string>
+    <string name="widget_setting_btn">Widget Setting</string>
+    <string name="checkbox_blank">Blank</string>
+    <string name="checkbox_bg1">Pattern</string>
+    <string name="checkbox_grunge">Grunge</string>
+    <string name="checkbox_rock">Rock Wall</string>
+    <string name="blank_image">Blank Image</string>
+    <string name="pattern_image">Pattern Image</string>
+    <string name="rock_image">Rock Image</string>
+    <string name="grunge_image">Grunge Image</string>
+    <string name="clock_setting_title">CLOCK BACKGROUND</string>
+    <string name="save">Save</string>
 </resources>

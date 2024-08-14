@@ -57,7 +57,7 @@ public class SinhalaTimeConverter {
         switch (time.getMinutes()) {
             case "0":
             case "00":
-                return "තත්පර කීපයක් පමනයි";
+                return "තත්පර කීපයයි";
             case "01":
                 return "විනාඩි එකයි";
             case "02":

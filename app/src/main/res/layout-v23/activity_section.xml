@@ -97,7 +97,6 @@
                 <Button
                     android:id="@+id/buttonSettings"
                     style="?android:attr/buttonBarButtonStyle"
-                    android:onClick="clockSettings"
                     android:layout_width="@dimen/_50sdp"
                     android:layout_height="@dimen/_50sdp"
                     android:layout_marginStart="@dimen/_10sdp"
@@ -106,6 +105,10 @@
                     android:paddingEnd="@dimen/_16sdp"
                     android:background="@drawable/button"
                     android:drawableStart="@drawable/baseline_settings_24"
+                    android:drawableTint="@color/white"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/white"
+                    android:onClick="clockSettings"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
