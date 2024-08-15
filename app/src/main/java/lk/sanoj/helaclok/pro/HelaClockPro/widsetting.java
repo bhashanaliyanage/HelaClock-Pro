@@ -31,13 +31,12 @@ import top.defaults.colorpickerr.ColorPickerPopup;
 
 public class widsetting extends Activity {
 
-    private Button colotchange;
     private TextView codeview;
-    private ImageView show;
     private CustomTextView textView4;
     private CustomTextView textView5;
     private CustomTextView textView6;
-    private Button backgraund, clearsetting, ynoty;
+    private Button clearsetting;
+    private Button ynoty;
     private TextView backcode;
     private ImageView backimage;
     private Context context;
@@ -59,13 +58,13 @@ public class widsetting extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_widsetting);
 
-        colotchange = findViewById(R.id.textcolour);
+        Button btnTextColor = findViewById(R.id.textcolour);
         codeview = findViewById(R.id.codeview);
         textView4 = findViewById(R.id.textAM_PM);
         textView5 = findViewById(R.id.textHour);
         textView6 = findViewById(R.id.textMinutes);
-        show = findViewById(R.id.ivClockBG);
-        backgraund = findViewById(R.id.backgraund);
+        ImageView show = findViewById(R.id.ivClockBG);
+        Button background = findViewById(R.id.background);
         backcode = findViewById(R.id.back);
         backimage = findViewById(R.id.backcolourimag);
         onoff = findViewById(R.id.switch1);
@@ -200,7 +199,7 @@ public class widsetting extends Activity {
         }
 
 
-        backgraund.setOnClickListener(new View.OnClickListener() {
+        background.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -234,7 +233,7 @@ public class widsetting extends Activity {
             }
         });
 
-        colotchange.setOnClickListener(new View.OnClickListener() {
+        btnTextColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 /*Intent intent = new Intent(widsetting.this, CPicker.class);

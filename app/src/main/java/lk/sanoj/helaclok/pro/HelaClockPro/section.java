@@ -34,7 +34,6 @@ public class section extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_section);
 
-        Button btn1 = findViewById(R.id.button);
         Button btn2 = findViewById(R.id.button3);
 
         final TextView textMeridiem = findViewById(R.id.textAM_PM);

@@ -26,10 +26,10 @@
         android:background="@drawable/ayout_bg"
         android:text="@string/textColour"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/backgraund"
-        app:layout_constraintEnd_toStartOf="@+id/backgraund"
+        app:layout_constraintBottom_toBottomOf="@+id/background"
+        app:layout_constraintEnd_toStartOf="@+id/background"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/backgraund" />
+        app:layout_constraintTop_toTopOf="@+id/background" />
 
     <TextView
         android:id="@+id/codeview"
@@ -134,11 +134,11 @@
         android:text="test2"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="@+id/backcolourimag"
-        app:layout_constraintStart_toStartOf="@+id/backgraund"
+        app:layout_constraintStart_toStartOf="@+id/background"
         app:layout_constraintTop_toBottomOf="@+id/ivClockBG" />
 
     <Button
-        android:id="@+id/backgraund"
+        android:id="@+id/background"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="4dp"
