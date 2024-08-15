@@ -62,21 +62,21 @@ public class clock extends AppCompatActivity {
             SharedPreferences prefs = this.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
             String themes = prefs.getString("ThemeName", null);
 
-
-            assert themes != null;
-            switch (themes) {
-                case "AssXSDrrfgssdbh":
-                    layt.setBackgroundColor(Color.BLACK);
-                    break;
-                case "WdhbgfhghhdwaSSDfgdfg":
-                    layt.setBackgroundResource(R.drawable.sndbackgrund);
-                    break;
-                case "HlknsdakjKJHfdskljhs":
-                    layt.setBackgroundResource(R.drawable.sndsback);
-                    break;
-                case "dAsdsQWdsfdSDfdsfS":
-                    layt.setBackgroundResource(R.drawable.lastbck);
-                    break;
+            if (themes != null) {
+                switch (themes) {
+                    case "AssXSDrrfgssdbh":
+                        layt.setBackgroundColor(Color.BLACK);
+                        break;
+                    case "WdhbgfhghhdwaSSDfgdfg":
+                        layt.setBackgroundResource(R.drawable.sndbackgrund);
+                        break;
+                    case "HlknsdakjKJHfdskljhs":
+                        layt.setBackgroundResource(R.drawable.sndsback);
+                        break;
+                    case "dAsdsQWdsfdSDfdsfS":
+                        layt.setBackgroundResource(R.drawable.lastbck);
+                        break;
+                }
             }
 
         } catch (Exception ignored) {

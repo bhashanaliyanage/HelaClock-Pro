@@ -86,17 +86,8 @@ public class section extends AppCompatActivity {
         // TODO: Make the hint image changeable.
         // TODO: Enable disable the hint image according to user preferences
 
-        /*btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent mainIntent = new Intent(section.this, MainActivity.class);
-                section.this.startActivity(mainIntent);
-
-            }
-        });*/
-
         btn2.setOnClickListener(v -> {
-            Intent mainIntent = new Intent(section.this, widsetting.class);
+            Intent mainIntent = new Intent(section.this, WidgetSetting.class);
             section.this.startActivity(mainIntent);
         });
 
@@ -123,20 +114,21 @@ public class section extends AppCompatActivity {
             SharedPreferences prefs = this.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
             String themes = prefs.getString("ThemeName", null);
 
-            assert themes != null;
-            switch (themes) {
-                case "AssXSDrrfgssdbh":
-                    cbBlank.setChecked(true);
-                    break;
-                case "WdhbgfhghhdwaSSDfgdfg":
-                    cbPattern.setChecked(true);
-                    break;
-                case "HlknsdakjKJHfdskljhs":
-                    cbGrunge.setChecked(true);
-                    break;
-                case "dAsdsQWdsfdSDfdsfS":
-                    cbRock.setChecked(true);
-                    break;
+            if (themes != null) {
+                switch (themes) {
+                    case "AssXSDrrfgssdbh":
+                        cbBlank.setChecked(true);
+                        break;
+                    case "WdhbgfhghhdwaSSDfgdfg":
+                        cbPattern.setChecked(true);
+                        break;
+                    case "HlknsdakjKJHfdskljhs":
+                        cbGrunge.setChecked(true);
+                        break;
+                    case "dAsdsQWdsfdSDfdsfS":
+                        cbRock.setChecked(true);
+                        break;
+                }
             }
         } catch (Exception e) {
             SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();

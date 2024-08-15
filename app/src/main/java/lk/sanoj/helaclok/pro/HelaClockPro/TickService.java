@@ -68,7 +68,6 @@ public class TickService extends Service {
     @SuppressLint("WrongConstant")
     @TargetApi(Build.VERSION_CODES.O)
     private void startMyOwnForeground() {
-
         String str = BuildConfig.APPLICATION_ID;
         NotificationChannel notificationChannel = new NotificationChannel(str, "ClockWidget Background Service", 0);
         notificationChannel.setLockscreenVisibility(0);
