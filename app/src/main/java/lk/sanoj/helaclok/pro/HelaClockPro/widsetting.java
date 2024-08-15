@@ -51,6 +51,7 @@ public class widsetting extends Activity {
     private Button btnDialogPick;
     private ColorPickerView colorPickerView;
     private EditText colorHex;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,7 @@ public class widsetting extends Activity {
         textView4 = findViewById(R.id.textAM_PM);
         textView5 = findViewById(R.id.textHour);
         textView6 = findViewById(R.id.textMinutes);
-        show = findViewById(R.id.imageView);
+        show = findViewById(R.id.ivClockBG);
         backgraund = findViewById(R.id.backgraund);
         backcode = findViewById(R.id.back);
         backimage = findViewById(R.id.backcolourimag);
@@ -71,6 +72,26 @@ public class widsetting extends Activity {
         hintview = findViewById(R.id.hintImage);
         clearsetting = findViewById(R.id.reset);
         ynoty = findViewById(R.id.clnoty);
+
+        // Get User Preferences for Clock Theme
+        prefs = this.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
+        String themes = prefs.getString("ThemeName", null);
+
+        assert themes != null;
+        switch (themes) {
+            case "AssXSDrrfgssdbh":
+                // show.setImageResource(BLA);
+                break;
+            case "WdhbgfhghhdwaSSDfgdfg":
+                show.setImageResource(R.drawable.sndbackgrund);
+                break;
+            case "HlknsdakjKJHfdskljhs":
+                show.setImageResource(R.drawable.sndsback);
+                break;
+            case "dAsdsQWdsfdSDfdsfS":
+                show.setImageResource(R.drawable.lastbck);
+                break;
+        }
 
         dialog = new Dialog(widsetting.this);
         dialog.setContentView(R.layout.color_picker);
@@ -84,23 +105,20 @@ public class widsetting extends Activity {
         colorPickerView = dialog.findViewById(R.id.colorPicker);
         colorHex = dialog.findViewById(R.id.colorHex);
 
-        btnDialogPick.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int color = colorPickerView.getColor();
-                String hexColor = String.format("#%06X", (0xFFFFFF & color));
-                codeview.setText(hexColor);
-                textView4.setTextColor(color);
-                textView5.setTextColor(color);
-                textView6.setTextColor(color);
-                SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
-                editor.putString("colour", hexColor);
-                editor.putInt("textc", color);
-                editor.apply();
-                System.out.println("Color: " + hexColor);
-                colorHex.setText(hexColor);
-                dialog.dismiss();
-            }
+        btnDialogPick.setOnClickListener(view -> {
+            int color = colorPickerView.getColor();
+            String hexColor = String.format("#%06X", (0xFFFFFF & color));
+            codeview.setText(hexColor);
+            textView4.setTextColor(color);
+            textView5.setTextColor(color);
+            textView6.setTextColor(color);
+            SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
+            editor.putString("colour", hexColor);
+            editor.putInt("textc", color);
+            editor.apply();
+            System.out.println("Color: " + hexColor);
+            colorHex.setText(hexColor);
+            dialog.dismiss();
         });
 
         colorHex.addTextChangedListener(new TextWatcher() {
@@ -134,7 +152,6 @@ public class widsetting extends Activity {
         });
 
         try {
-            SharedPreferences prefs = this.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
             String colour = prefs.getString("colour", null);//codeview
             textc = prefs.getInt("textc", 0);//maintext colour
 

@@ -55,27 +55,24 @@ public class section extends AppCompatActivity {
                 try {
                     while (!isInterrupted()) {
                         Thread.sleep(1000);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    clock.updateTime();
-                                    // clock.setTime("11:30:AM");
-                                    SinhalaTimeConverter converter = new SinhalaTimeConverter(clock.getTime());
+                        runOnUiThread(() -> {
+                            try {
+                                clock.updateTime();
+                                // clock.setTime("11:30:AM");
+                                SinhalaTimeConverter converter1 = new SinhalaTimeConverter(clock.getTime());
 
-                                    Log.d("Meridiem", clock.getTime().getMeridiem());
+                                Log.d("Meridiem", clock.getTime().getMeridiem());
 
-                                    textHour.setText(converter.getHour());
-                                    textMinutes.setText(converter.getMinutes());
-                                    textMeridiem.setText(converter.getMeridiem());
-                                    if (clock.getTime().getMeridiem().equals("PM")) {
-                                        hintImage.setImageResource(R.drawable.night);
-                                    } else {
-                                        hintImage.setImageResource(R.drawable.morningimg);
-                                    }
-                                } catch (Exception e) {
-                                    Log.e("Error in section.java", Objects.requireNonNull(e.getMessage()));
+                                textHour.setText(converter1.getHour());
+                                textMinutes.setText(converter1.getMinutes());
+                                textMeridiem.setText(converter1.getMeridiem());
+                                if (clock.getTime().getMeridiem().equals("PM")) {
+                                    hintImage.setImageResource(R.drawable.night);
+                                } else {
+                                    hintImage.setImageResource(R.drawable.morningimg);
                                 }
+                            } catch (Exception e) {
+                                Log.e("Error in section.java", Objects.requireNonNull(e.getMessage()));
                             }
                         });
                     }
@@ -99,12 +96,9 @@ public class section extends AppCompatActivity {
             }
         });*/
 
-        btn2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent mainIntent = new Intent(section.this, widsetting.class);
-                section.this.startActivity(mainIntent);
-            }
+        btn2.setOnClickListener(v -> {
+            Intent mainIntent = new Intent(section.this, widsetting.class);
+            section.this.startActivity(mainIntent);
         });
 
         createDialog();
