@@ -6,6 +6,8 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +26,11 @@ import lk.sanoj.helaclok.pro.HelaClockPro.Models.Clock;
 public class section extends AppCompatActivity {
     // private RemoteViews views;
     private Dialog dialog;
-    CheckBox cbBlank;
-    CheckBox cbPattern;
-    CheckBox cbGrunge;
-    CheckBox cbRock;
+    private CheckBox cbBlank;
+    private CheckBox cbPattern;
+    private CheckBox cbGrunge;
+    private CheckBox cbRock;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +51,44 @@ public class section extends AppCompatActivity {
         textMinutes.setText(converter.getMinutes());
         textMeridiem.setText(converter.getMeridiem());
 
-        Thread t = new Thread() {
+        // Update the clock
+        // Update UI elements
+        // Update image based on time
+        // Schedule the next update
+        // Repeat every second
+        Runnable updateTask = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    clock.updateTime(); // Update the clock
+                    SinhalaTimeConverter converter1 = new SinhalaTimeConverter(clock.getTime());
+
+                    Log.d("Meridiem", clock.getTime().getMeridiem());
+
+                    // Update UI elements
+                    textHour.setText(converter1.getHour());
+                    textMinutes.setText(converter1.getMinutes());
+                    textMeridiem.setText(converter1.getMeridiem());
+
+                    // Update image based on time
+                    if (clock.getTime().getMeridiem().equals("PM")) {
+                        hintImage.setImageResource(R.drawable.night);
+                    } else {
+                        hintImage.setImageResource(R.drawable.morningimg);
+                    }
+                } catch (Exception e) {
+                    Log.e("Error in section.java", e.getMessage(), e);
+                }
+
+                // Schedule the next update
+                handler.postDelayed(this, 1000); // Repeat every second
+            }
+        };
+
+        // Start the periodic task
+        handler.post(updateTask);
+
+        /*Thread t = new Thread() {
             @Override
             public void run() {
                 try {
@@ -81,7 +121,7 @@ public class section extends AppCompatActivity {
             }
         };
 
-        t.start();
+        t.start();*/
 
         // TODO: Make the hint image changeable.
         // TODO: Enable disable the hint image according to user preferences

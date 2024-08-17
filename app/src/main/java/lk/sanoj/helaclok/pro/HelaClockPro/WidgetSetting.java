@@ -9,6 +9,8 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -40,6 +42,7 @@ public class WidgetSetting extends Activity {
     private ColorPickerView colorPickerView;
     private EditText colorHex;
     private boolean hintStatus;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +90,44 @@ public class WidgetSetting extends Activity {
         textMinutes.setText(converter.getMinutes());
         textMeridiem.setText(converter.getMeridiem());
 
-        Thread t = new Thread() {
+        // Update the clock
+        // Update UI elements
+        // Update image based on time
+        // Schedule the next update
+        // Repeat every second
+        Runnable updateTask = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    clock.updateTime(); // Update the clock
+                    SinhalaTimeConverter converter1 = new SinhalaTimeConverter(clock.getTime());
+
+                    Log.d("Meridiem", clock.getTime().getMeridiem());
+
+                    // Update UI elements
+                    textHour.setText(converter1.getHour());
+                    textMinutes.setText(converter1.getMinutes());
+                    textMeridiem.setText(converter1.getMeridiem());
+
+                    // Update image based on time
+                    if (clock.getTime().getMeridiem().equals("PM")) {
+                        hintImage.setImageResource(R.drawable.night);
+                    } else {
+                        hintImage.setImageResource(R.drawable.morningimg);
+                    }
+                } catch (Exception e) {
+                    Log.e("Error in section.java", e.getMessage(), e);
+                }
+
+                // Schedule the next update
+                handler.postDelayed(this, 1000); // Repeat every second
+            }
+        };
+
+        // Start the periodic task
+        handler.post(updateTask);
+
+        /*Thread t = new Thread() {
             @Override
             public void run() {
                 try {
@@ -120,7 +160,7 @@ public class WidgetSetting extends Activity {
             }
         };
 
-        t.start();
+        t.start();*/
 
         dialog = new Dialog(WidgetSetting.this);
         dialog.setContentView(R.layout.color_picker);
@@ -283,6 +323,5 @@ public class WidgetSetting extends Activity {
     private boolean isValidHexColor(String hexColor) {
         return hexColor.matches("#([A-Fa-f0-9]{6})");
     }
-
 
 }
