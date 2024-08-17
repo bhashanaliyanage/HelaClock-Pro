@@ -27,4 +27,6 @@
     <string name="english_font">fonts/OpenSans-Regular.ttf</string>
     <string name="english_font_med">fonts/OpenSans-Medium.ttf</string>
     <string name="english_font_sb">fonts/OpenSans-SemiBold.ttf</string>
+    <string name="version">HELACLOCK PRO v3.1.2 [FORK]</string>
+    <string name="version_welcome">v3.1.2</string>
 </resources>
