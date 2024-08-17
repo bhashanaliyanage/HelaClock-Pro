@@ -29,4 +29,8 @@
     <string name="english_font_sb">fonts/OpenSans-SemiBold.ttf</string>
     <string name="version">HELACLOCK PRO v3.1.2 [FORK]</string>
     <string name="version_welcome">v3.1.2</string>
+    <string name="hint">#FFFFFF</string>
+    <string name="pick">Pick</string>
+    <string name="turn_off_hint">Turn off Hint</string>
+    <string name="turn_on_hint">Turn on Hint</string>
 </resources>

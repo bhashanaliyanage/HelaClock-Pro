@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
-            android:text="Pick"
+            android:text="@string/pick"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/colorHex"
             app:layout_constraintStart_toStartOf="@+id/colorHex"
@@ -43,7 +43,7 @@
             android:autofillHints=""
             android:ems="10"
             android:inputType="text"
-            android:text="Hex"
+            android:hint="@string/hint"
             app:layout_constraintEnd_toEndOf="@+id/colorPicker"
             app:layout_constraintStart_toStartOf="@+id/colorPicker"
             app:layout_constraintTop_toBottomOf="@+id/colorPicker" />

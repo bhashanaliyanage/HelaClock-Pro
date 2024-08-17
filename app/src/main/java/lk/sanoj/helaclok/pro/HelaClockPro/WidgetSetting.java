@@ -44,7 +44,7 @@ public class WidgetSetting extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         setContentView(R.layout.activity_widsetting);
 
         Button btnTextColor = findViewById(R.id.textcolour);
@@ -60,6 +60,8 @@ public class WidgetSetting extends Activity {
         // Get User Preferences for Clock Theme
         SharedPreferences prefs = this.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
         String themes = prefs.getString("ThemeName", null);
+        int textColor = prefs.getInt("textc", 0);
+        String initialHexColor = String.format("#%06X", (0xFFFFFF & textColor));
 
         if (themes != null) {
             switch (themes) {
@@ -131,6 +133,8 @@ public class WidgetSetting extends Activity {
         Button btnDialogPick = dialog.findViewById(R.id.btnPick);
         colorPickerView = dialog.findViewById(R.id.colorPicker);
         colorHex = dialog.findViewById(R.id.colorHex);
+        colorHex.setText(initialHexColor);
+        colorPickerView.setInitialColor(textColor);
 
         btnDialogPick.setOnClickListener(view -> {
             int color = colorPickerView.getColor();
@@ -163,26 +167,28 @@ public class WidgetSetting extends Activity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String hexColor = editable.toString().trim();;
+                String hexColor = editable.toString().trim();
 
-                // Validate the hex color
-                if (isValidHexColor(hexColor)) {
-                    // Convert the hex color to int
-                    int color = Color.parseColor(hexColor);
+                // #66e6ff
 
-                    // Set the initial color in the ColorPickerView
-                    colorPickerView.setInitialColor(color);
-                } else {
-                    // Handle the case where the hex color is not valid
-                    // You can display an error message or take any other appropriate action
-                    Toast.makeText(WidgetSetting.this, "Invalid hex color: " + hexColor, Toast.LENGTH_SHORT).show();
+                if (hexColor.length() == 6) {
+                    // Add the '#' symbol if it's missing
+                    hexColor = "#" + hexColor;
+                    // Validate the hex color
+                    validateHexColor(hexColor);
                 }
+
+                if (hexColor.length() == 7 && hexColor.charAt(0) == '#') {
+                    // Validate the hex color
+                    validateHexColor(hexColor);
+                }
+
             }
         });
 
         try {
             //code view
-            int textc = prefs.getInt("textc", 0);//maintext colour
+            // int textc = prefs.getInt("textc", 0);//maintext colour
 
             //background colour code text
             int hint = prefs.getInt("hint", 0);//hint
@@ -194,23 +200,23 @@ public class WidgetSetting extends Activity {
             } else {
                 backgroundImage.setBackgroundColor(bcolour);
             }
-            if (textc == 0) {
+            if (textColor == 0) {
                 textMeridiem.setTextColor(Color.WHITE);
                 textHour.setTextColor(Color.WHITE);
                 textMinutes.setTextColor(Color.WHITE);
             } else {
-                hintImage.setColorFilter(textc);
-                textMeridiem.setTextColor(textc);
-                textHour.setTextColor(textc);
-                textMinutes.setTextColor(textc);
+                hintImage.setColorFilter(textColor);
+                textMeridiem.setTextColor(textColor);
+                textHour.setTextColor(textColor);
+                textMinutes.setTextColor(textColor);
             }
             if (hint == 0) {
                 hintImage.setVisibility(View.VISIBLE);
-                btnHint.setText("Turn off Hint");
+                btnHint.setText(R.string.turn_off_hint);
                 hintStatus = true;
             } else if (hint == 1) {
                 hintImage.setVisibility(View.INVISIBLE);
-                btnHint.setText("Turn on Hint");
+                btnHint.setText(R.string.turn_on_hint);
                 hintStatus = false;
             }
         } catch (Exception ignored) {
@@ -233,7 +239,7 @@ public class WidgetSetting extends Activity {
 
         btnHint.setOnClickListener(v -> {
             if (hintStatus) {
-                btnHint.setText("Turn on Hint");
+                btnHint.setText(R.string.turn_on_hint);
 
                 hintStatus = false;
 
@@ -245,7 +251,7 @@ public class WidgetSetting extends Activity {
 
                 Snackbar.make(WidgetSetting.this.findViewById(R.id.linearLayout1), "Hint Turned Off", Snackbar.LENGTH_SHORT).show();
             } else {
-                btnHint.setText("Turn off Hint");
+                btnHint.setText(R.string.turn_off_hint);
 
                 hintStatus = true;
 
@@ -258,6 +264,20 @@ public class WidgetSetting extends Activity {
                 Snackbar.make(WidgetSetting.this.findViewById(R.id.linearLayout1), "Hint Turned On", Snackbar.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void validateHexColor(String hexColor) {
+        if (isValidHexColor(hexColor)) {
+            // Convert the hex color to int
+            int color = Color.parseColor(hexColor);
+
+            // Set the initial color in the ColorPickerView
+            colorPickerView.setInitialColor(color);
+        } else {
+            // Handle the case where the hex color is not valid
+            // You can display an error message or take any other appropriate action
+            Toast.makeText(WidgetSetting.this, "Invalid hex color: " + hexColor, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private boolean isValidHexColor(String hexColor) {
