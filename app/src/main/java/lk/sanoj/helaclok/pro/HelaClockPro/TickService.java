@@ -46,38 +46,6 @@ public class TickService extends Service {
             startForeground(1, new Notification());
         }
 
-
-        /*piPI = PendingIntent.getBroadcast(applicationContext, 0, intent, 0);
-        new Thread() {
-            public void run() {
-                int i = 0;
-                while (true) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("TickThread ");
-                    sb.append(i);
-                    String str = "TickService";
-                    Log.d(str, sb.toString());
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        TickService.this.dTime = (double) Calendar.getInstance().getTimeInMillis();
-                    }
-                    Log.d(str, Long.toString((1000 - (((long) TickService.this.dTime) % 1000)) + 3));
-                    SystemClock.sleep((1000 - (((long) TickService.this.dTime) % 1000)) + 3);
-                    try {
-                        TickService.this.piPI.send();
-                    } catch (PendingIntent.CanceledException e) {
-                        e.printStackTrace();
-                    }
-                    i++;
-                }
-            }
-        }.start();*/
-
-        if (Build.VERSION.SDK_INT >= 26) {
-            startMyOwnForeground();
-        } else {
-            startForeground(1, new Notification());
-        }
-
         // Schedule the first alarm
         scheduleNextUpdate();
     }

@@ -17,17 +17,19 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Build.VERSION;
+import android.provider.AlarmClock;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import java.util.Arrays;
 
 import static android.content.Context.MODE_PRIVATE;
-import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
 import lk.sanoj.helaclok.pro.HelaClockPro.Models.Clock;
@@ -377,6 +379,30 @@ public class ClockWidget extends AppWidgetProvider {
             this.appWidgetManager.updateAppWidget(this.widget, this.views);
 
             // This method will update the clock time and no cases found for changing colors
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] iArr) {
+        for (int appWidgetId : iArr) {
+            // Create an Intent to open the clock app
+            Intent openClockIntent = new Intent(AlarmClock.ACTION_SHOW_ALARMS);
+            openClockIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            // Create a PendingIntent with the Intent
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, openClockIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            // Create a RemoteViews object to update the widget
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.hellowidget_layout);
+            // Set the PendingIntent to the widget’s view
+            views.setOnClickPendingIntent(R.id.status, pendingIntent);
+            views.setOnClickPendingIntent(R.id.hou, pendingIntent);
+            views.setOnClickPendingIntent(R.id.mini, pendingIntent);
+            views.setOnClickPendingIntent(R.id.AMPM, pendingIntent);
+
+            // Update the widget with the RemoteViews
+            appWidgetManager.updateAppWidget(appWidgetId, views);
         }
     }
 
