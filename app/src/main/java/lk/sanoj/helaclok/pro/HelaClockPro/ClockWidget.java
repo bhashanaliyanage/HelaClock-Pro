@@ -12,21 +12,23 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
-import lk.sanoj.helaclok.pro.HelaClockPro.Controller.SinhalaTimeConverter;
+import androidx.core.content.ContextCompat;
+
 import lk.sanoj.helaclok.pro.HelaClockPro.Models.Clock;
 
 public class ClockWidget extends AppWidgetProvider {
@@ -37,17 +39,14 @@ public class ClockWidget extends AppWidgetProvider {
     private int textColor01;
     private int sexy;
     private int amPM_Track;
-    private int textColor02;
+    private int color;
 
 
     public void onEnabled(Context context) {
         Log.d("ClockWithHandle", "onEnabled");
-
     }
 
     public void onReceive(final Context context, Intent intent) {
-
-
         String str = "ClockWithHandle";
         Log.d(str, "OnReceive");
         super.onReceive(context, intent);
@@ -56,7 +55,7 @@ public class ClockWidget extends AppWidgetProvider {
                 action;
         Log.d(str, sb);
 
-
+        // Start Tick Service
         if (VERSION.SDK_INT >= 26) {
             context.startForegroundService(new Intent(context, TickService.class));
         } else {
@@ -65,7 +64,6 @@ public class ClockWidget extends AppWidgetProvider {
 
         assert action != null;
         if (action.equals("android.appwidget.action.APPWIDGET_UPDATE")) {
-
             int hintcontorl;
             try {
                 SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
@@ -74,26 +72,21 @@ public class ClockWidget extends AppWidgetProvider {
                 hintcontorl = 0;
             }
 
-
+            // Load widget with or without hint
             if (hintcontorl == 1) {
                 this.views = new RemoteViews(context.getPackageName(), R.layout.withouthint);
             } else if (hintcontorl == 0) {
                 this.views = new RemoteViews(context.getPackageName(), R.layout.hellowidget_layout);
             }
 
-
-            //////////////////////////////////////////////////
-
-
             final Clock clock = new Clock();
             // SinhalaTimeConverter converter = new SinhalaTimeConverter(clock.getTime());
 
+            // Old Code
             /*String hours = new SimpleDateFormat("hh").format(Calendar.getInstance().getTime());
             String minutes = new SimpleDateFormat("mm").format(Calendar.getInstance().getTime());
             String meridiem = new SimpleDateFormat("a").format(Calendar.getInstance().getTime());*/
 
-
-            // String clockMeridiem = new SimpleDateFormat("a").format(Calendar.getInstance().getTime());
             switch (clock.getTime().getMeridiem()) {
                 case "AM":
                 case "am":
@@ -107,6 +100,7 @@ public class ClockWidget extends AppWidgetProvider {
 
             String imageHours = clock.getTime().getHours();
 
+            // Getting Background Color
             try {
                 SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
                 sexy = prefs.getInt("bcolour", 0);
@@ -114,22 +108,21 @@ public class ClockWidget extends AppWidgetProvider {
 
             }
 
+            // Setting Background Color
             try {
                 views.setInt(R.id.back, "setBackgroundColor", sexy);
             } catch (Exception ignored) {
+
             }
 
-
-            ///////////////////////////////////////////////////////////////////////////////////////
-
-
+            // Set visibility of the hint image
             if (hintcontorl == 1) {
                 views.setViewVisibility(R.id.status, INVISIBLE);
             } else if (hintcontorl == 0) {
                 views.setViewVisibility(R.id.status, VISIBLE);
 
+                // Set hint image day or night
                 if (amPM_Track == 1) {
-                    //views.setImageViewResource(R.id.status, R.drawable.after);
                     switch (imageHours) {
                         case "00":
                         case "12":
@@ -138,7 +131,8 @@ public class ClockWidget extends AppWidgetProvider {
                         case "03":
                         case "04":
                         case "05":
-                            views.setImageViewResource(R.id.status, R.drawable.night);
+                            // views.setImageViewResource(R.id.status, R.drawable.night);
+                            views.setImageViewBitmap(R.id.status, tintDrawable(context, "night"));
                             break;
                         case "06":
                         case "07":
@@ -146,7 +140,8 @@ public class ClockWidget extends AppWidgetProvider {
                         case "09":
                         case "10":
                         case "11":
-                            views.setImageViewResource(R.id.status, R.drawable.morningimg);
+                            // views.setImageViewResource(R.id.status, R.drawable.morningimg);
+                            views.setImageViewBitmap(R.id.status, tintDrawable(context, "morning"));
                             break;
                     }
 
@@ -163,23 +158,21 @@ public class ClockWidget extends AppWidgetProvider {
                         case "05":
                         case "06":
                         case "07":
-                            views.setImageViewResource(R.id.status, R.drawable.after);
+                            // views.setImageViewResource(R.id.status, R.drawable.after);
+                            views.setImageViewBitmap(R.id.status, tintDrawable(context, "after"));
                             break;
                         case "08":
                         case "09":
                         case "10":
                         case "11":
-                            views.setImageViewResource(R.id.status, R.drawable.night);
+                            // views.setImageViewResource(R.id.status, R.drawable.night);
+                            views.setImageViewBitmap(R.id.status, tintDrawable(context, "night"));
                             break;
                     }
                 }
             }
 
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-
-            ///////////////////////////////////////////////////////////////////////////////////////
-
+            // Set clock meridiem
             switch (clock.getTime().getMeridiem()) {
                 case "am":
                 case "AM":
@@ -191,9 +184,7 @@ public class ClockWidget extends AppWidgetProvider {
                     break;
             }
 
-
-            ///////////////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////////////
+            // Set clock hours
             switch (clock.getTime().getHours()) {
                 case "01":
                 case "13":
@@ -247,6 +238,7 @@ public class ClockWidget extends AppWidgetProvider {
                     break;
             }
 
+            // Setting clock minutes
             switch (clock.getTime().getMinutes()) {
                 case "0":
                 case "00":
@@ -434,14 +426,60 @@ public class ClockWidget extends AppWidgetProvider {
 
             Intent intents = new Intent(context, WidgetSetting.class);
             intent.setAction("Click");
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intents, 0);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intents, PendingIntent.FLAG_IMMUTABLE);
             views.setOnClickPendingIntent(R.id.myRelativeLayout, pendingIntent);
 
             this.widget = new ComponentName(context, ClockWidget.class);
             this.appWidgetManager = AppWidgetManager.getInstance(context);
             this.appWidgetManager.updateAppWidget(this.widget, this.views);
 
+            // This method will update the clock time and no cases found for changing colors
         }
+    }
+
+    private Bitmap tintDrawable(Context context, String drawableName) {
+        int color = Color.WHITE;
+
+        try {
+            SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
+
+            if (prefs.getInt("textc", 0) != 0) {
+                color = prefs.getInt("textc", 0);
+            }
+        } catch (Exception ignore) {
+        }
+
+        int resourceId;
+        switch (drawableName) {
+            case "night":
+                resourceId = R.drawable.night;
+                break;
+            case "morning":
+                resourceId = R.drawable.morningimg;
+                break;
+            case "after":
+                resourceId = R.drawable.after;
+                break;
+            default:
+                return null;
+        }
+
+        Drawable drawable = ContextCompat.getDrawable(context, resourceId);
+        if (drawable == null) {
+            return null;
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+
+        return bitmap;
     }
 
     public void onDeleted(Context context, int[] iArr) {
@@ -454,14 +492,14 @@ public class ClockWidget extends AppWidgetProvider {
     public Bitmap textAsBitmap(Context context, String time, int fontSize) {
         try {
             SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
-            textColor02 = prefs.getInt("textc", 0);
+            color = prefs.getInt("textc", 0);
 
-            if (textColor02 == 0) {
+            if (color == 0) {
                 textColor01 = Color.WHITE;
             } else {
-                textColor01 = textColor02;
+                textColor01 = color;
                 // TODO: Set Color to Widget
-                // views.setInt(R.id.status, "setColorFilter", textColor01);
+                // views.setInt(R.id.status, "setBackgroundColor", textColor01);
             }
         } catch (Exception e) {
             textColor01 = Color.WHITE;
@@ -488,12 +526,12 @@ public class ClockWidget extends AppWidgetProvider {
         try {
 
             SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
-            textColor02 = prefs.getInt("textc", 0);
+            color = prefs.getInt("textc", 0);
 
-            if (textColor02 == 0) {
+            if (color == 0) {
                 textColor01 = Color.WHITE;
             } else {
-                textColor01 = textColor02;
+                textColor01 = color;
             }
 
 
