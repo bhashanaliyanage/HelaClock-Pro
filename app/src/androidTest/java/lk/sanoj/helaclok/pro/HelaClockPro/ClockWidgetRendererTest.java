@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.RectF;
+import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -32,6 +33,26 @@ public class ClockWidgetRendererTest {
         assertEquals(R.drawable.after, ClockWidgetRenderer.hintResourceFor(new Time("07", "59", "PM")));
         assertEquals(R.drawable.night, ClockWidgetRenderer.hintResourceFor(new Time("08", "00", "PM")));
         assertEquals(R.drawable.night, ClockWidgetRenderer.hintResourceFor(new Time("12", "00", "AM")));
+    }
+
+    @Test
+    public void systemModeUsesAccent3Tone50WhenAvailable() {
+        Context context = InstrumentationRegistry.getTargetContext();
+        assertEquals(Color.WHITE, ClockWidgetRenderer.resolveColor(context,
+                ClockWidgetRenderer.COLOR_MODE_WHITE, Color.RED));
+        assertEquals(Color.MAGENTA, ClockWidgetRenderer.resolveColor(context,
+                ClockWidgetRenderer.COLOR_MODE_CUSTOM, Color.MAGENTA));
+        if (Build.VERSION.SDK_INT >= 31) {
+            int colorId = context.getResources().getIdentifier(
+                    "system_accent3_50", "color", "android");
+            assertTrue("Android system accent resource should exist", colorId != 0);
+            assertEquals(context.getResources().getColor(colorId),
+                    ClockWidgetRenderer.resolveColor(context,
+                            ClockWidgetRenderer.COLOR_MODE_SYSTEM, Color.RED));
+        } else {
+            assertEquals(Color.WHITE, ClockWidgetRenderer.resolveColor(context,
+                    ClockWidgetRenderer.COLOR_MODE_SYSTEM, Color.RED));
+        }
     }
 
     @Test

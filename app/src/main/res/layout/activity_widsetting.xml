@@ -34,26 +34,42 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
+        <RadioGroup
+            android:id="@+id/colorModeGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
             android:gravity="center"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/textcolour"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="@dimen/_250sdp"
-                android:layout_height="@dimen/_50sdp"
-                android:layout_margin="@dimen/_5sdp"
-                android:background="@drawable/button"
-                android:paddingStart="@dimen/_24sdp"
-                android:paddingEnd="@dimen/_24sdp"
-                android:text="@string/textColour"
-                android:textAlignment="viewStart"
+            <RadioButton
+                android:id="@+id/colorSystem"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/color_system"
                 android:textColor="@color/white" />
 
-        </LinearLayout>
+            <RadioButton
+                android:id="@+id/colorCustom"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/color_custom"
+                android:textColor="@color/white" />
+
+            <RadioButton
+                android:id="@+id/colorWhite"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/color_white"
+                android:textColor="@color/white" />
+        </RadioGroup>
 
 
         <Button

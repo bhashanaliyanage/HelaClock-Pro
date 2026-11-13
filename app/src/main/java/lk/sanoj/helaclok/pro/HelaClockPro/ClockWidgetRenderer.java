@@ -1,6 +1,7 @@
 package lk.sanoj.helaclok.pro.HelaClockPro;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,10 @@ import lk.sanoj.helaclok.pro.HelaClockPro.Models.Time;
 
 /** Shared content renderer for the home-screen widget and its in-app previews. */
 final class ClockWidgetRenderer {
+    static final int COLOR_MODE_SYSTEM = 0;
+    static final int COLOR_MODE_CUSTOM = 1;
+    static final int COLOR_MODE_WHITE = 2;
+    private static final String COLOR_MODE_PREFERENCE = "clock_color_mode";
     static final int REFERENCE_WIDTH_DP = 358;
     static final int REFERENCE_HEIGHT_DP = 196;
     private static final int LAYOUT_HEIGHT_DP = 220;
@@ -70,7 +76,7 @@ final class ClockWidgetRenderer {
     private ClockWidgetRenderer(Context context) {
         this(context, new Clock().getTime(),
                 context.getSharedPreferences("MyPrefsFile", Context.MODE_PRIVATE).getInt("hint", 0) != 1,
-                context.getSharedPreferences("MyPrefsFile", Context.MODE_PRIVATE).getInt("textc", 0));
+                resolveConfiguredColor(context));
     }
 
     ClockWidgetRenderer(Context context, Time time, boolean showHint, int configuredColor) {
@@ -87,6 +93,38 @@ final class ClockWidgetRenderer {
         hourText = HOUR_TEXTS[hour];
         minuteText = MINUTE_TEXTS[minute];
         contentDescription = meridiemText + " " + hourText + " " + minuteText;
+    }
+
+    static int getConfiguredColorMode(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", Context.MODE_PRIVATE);
+        if (prefs.contains(COLOR_MODE_PREFERENCE)) {
+            int storedMode = prefs.getInt(COLOR_MODE_PREFERENCE, COLOR_MODE_WHITE);
+            return storedMode == COLOR_MODE_SYSTEM && Build.VERSION.SDK_INT < 31
+                    ? COLOR_MODE_WHITE : storedMode;
+        }
+        // Older app versions stored a nonzero color only after the user chose one.
+        if (prefs.getInt("textc", 0) != 0) {
+            return COLOR_MODE_CUSTOM;
+        }
+        return Build.VERSION.SDK_INT >= 31 ? COLOR_MODE_SYSTEM : COLOR_MODE_WHITE;
+    }
+
+    static int resolveConfiguredColor(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("MyPrefsFile", Context.MODE_PRIVATE);
+        return resolveColor(context, getConfiguredColorMode(context), prefs.getInt("textc", 0));
+    }
+
+    static int resolveColor(Context context, int mode, int customColor) {
+        if (mode == COLOR_MODE_CUSTOM && customColor != 0) {
+            return customColor;
+        }
+        if (mode == COLOR_MODE_SYSTEM && Build.VERSION.SDK_INT >= 31) {
+            int colorId = context.getResources().getIdentifier("system_accent3_50", "color", "android");
+            if (colorId != 0) {
+                return context.getResources().getColor(colorId);
+            }
+        }
+        return Color.WHITE;
     }
 
     static RemoteViews createRemoteViews(Context context) {

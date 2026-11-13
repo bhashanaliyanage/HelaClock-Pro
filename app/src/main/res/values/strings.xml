@@ -5,6 +5,9 @@
     <string name="maintext">සිංහල ඔරලෝසුව</string>
     <string name="widhed">Widget Settings</string>
     <string name="textColour">Change Text Colour</string>
+    <string name="color_system">System</string>
+    <string name="color_custom">Custom</string>
+    <string name="color_white">White</string>
     <string name="sinhala">fonts/emanee.ttf</string>
     <string name="bakcolou">Backgrund Colour</string>
     <string name="Hint">Hint ON</string>

@@ -37,7 +37,7 @@ public class ExampleInstrumentedTest {
 public void changeTextColorDialog() {
     try (ActivityScenario<WidgetSetting> ignored = ActivityScenario.launch(WidgetSetting.class)) {
         // Click the button
-        onView(withId(R.id.textcolour)).perform(click());
+        onView(withId(R.id.colorCustom)).perform(click());
 
         // Check if the dialog is displayed
         onView(withId(R.id.colorPickerDialog))

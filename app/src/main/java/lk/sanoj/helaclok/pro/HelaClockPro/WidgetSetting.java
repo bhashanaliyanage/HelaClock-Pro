@@ -2,7 +2,9 @@ package lk.sanoj.helaclok.pro.HelaClockPro;
 
 
 import android.app.Activity;
+import android.appwidget.AppWidgetManager;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -18,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -50,7 +53,9 @@ public class WidgetSetting extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         setContentView(R.layout.activity_widsetting);
 
-        Button btnTextColor = findViewById(R.id.textcolour);
+        RadioButton systemColor = findViewById(R.id.colorSystem);
+        RadioButton customColor = findViewById(R.id.colorCustom);
+        RadioButton whiteColor = findViewById(R.id.colorWhite);
         previewContainer = findViewById(R.id.widgetPreviewContainer);
         Button clearSettings = findViewById(R.id.reset);
         btnHint = findViewById(R.id.clnoty);
@@ -58,6 +63,18 @@ public class WidgetSetting extends Activity {
         // Load the saved text color for the picker.
         SharedPreferences prefs = this.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
         int textColor = prefs.getInt("textc", 0);
+        int colorMode = ClockWidgetRenderer.getConfiguredColorMode(this);
+        if (!prefs.contains("clock_color_mode")) {
+            prefs.edit().putInt("clock_color_mode", colorMode).apply();
+        }
+        systemColor.setVisibility(Build.VERSION.SDK_INT >= 31 ? View.VISIBLE : View.GONE);
+        if (colorMode == ClockWidgetRenderer.COLOR_MODE_SYSTEM) {
+            systemColor.setChecked(true);
+        } else if (colorMode == ClockWidgetRenderer.COLOR_MODE_CUSTOM) {
+            customColor.setChecked(true);
+        } else {
+            whiteColor.setChecked(true);
+        }
         String initialHexColor = String.format("#%06X", (0xFFFFFF & textColor));
 
         handler.post(previewUpdateTask);
@@ -83,11 +100,13 @@ public class WidgetSetting extends Activity {
             SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
             editor.putString("colour", hexColor);
             editor.putInt("textc", color);
+            editor.putInt("clock_color_mode", ClockWidgetRenderer.COLOR_MODE_CUSTOM);
             editor.apply();
             System.out.println("Color: " + hexColor);
             colorHex.setText(hexColor);
             dialog.dismiss();
             refreshPreview();
+            refreshWidgetInstances();
             Snackbar.make(WidgetSetting.this.findViewById(R.id.linearLayout1), "Applied Color: " + hexColor, Snackbar.LENGTH_SHORT).show();
         });
 
@@ -139,7 +158,12 @@ public class WidgetSetting extends Activity {
         } catch (Exception ignored) {
         }
 
-        btnTextColor.setOnClickListener(view -> dialog.show());
+        systemColor.setOnClickListener(view -> setColorMode(ClockWidgetRenderer.COLOR_MODE_SYSTEM));
+        customColor.setOnClickListener(view -> {
+            setColorMode(ClockWidgetRenderer.COLOR_MODE_CUSTOM);
+            dialog.show();
+        });
+        whiteColor.setOnClickListener(view -> setColorMode(ClockWidgetRenderer.COLOR_MODE_WHITE));
 
         clearSettings.setOnClickListener(v -> {
             SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
@@ -203,6 +227,26 @@ public class WidgetSetting extends Activity {
         if (previewContainer != null) {
             ClockWidgetRenderer.renderPreview(this, previewContainer);
         }
+    }
+
+    private void setColorMode(int mode) {
+        getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit()
+                .putInt("clock_color_mode", mode)
+                .apply();
+        refreshPreview();
+        refreshWidgetInstances();
+    }
+
+    private void refreshWidgetInstances() {
+        AppWidgetManager manager = AppWidgetManager.getInstance(this);
+        int[] widgetIds = manager.getAppWidgetIds(new ComponentName(this, ClockWidget.class));
+        if (widgetIds.length == 0) {
+            return;
+        }
+        Intent update = new Intent(this, ClockWidget.class);
+        update.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        update.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds);
+        sendBroadcast(update);
     }
 
     @Override
