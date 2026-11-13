@@ -12,52 +12,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/hintImage"
-            android:layout_width="100dp"
-            android:layout_height="230dp"
+        <FrameLayout
+            android:id="@+id/widgetPreviewContainer"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
             android:layout_marginTop="80dp"
-            android:layout_marginBottom="182dp"
-            android:contentDescription="@string/hint_image"
-            app:layout_constraintBottom_toTopOf="@+id/imageView4"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ahmadrosid.com.lib.CustomTextView
-            android:id="@+id/textAM_PM"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
-            android:text="වේලාව පෙරවරු"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_23sdp"
-            app:fontPath="@string/sinhala"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/hintImage" />
-
-        <ahmadrosid.com.lib.CustomTextView
-            android:id="@+id/textHour"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="නවය පසුවී"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_45sdp"
-            app:fontPath="@string/sinhala"
-            app:layout_constraintStart_toStartOf="@+id/textAM_PM"
-            app:layout_constraintTop_toTopOf="@+id/textAM_PM" />
-
-        <ahmadrosid.com.lib.CustomTextView
-            android:id="@+id/textMinutes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="විනාඩි පනස් නවයයි"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_29sdp"
-            app:fontPath="@string/sinhala"
-            app:layout_constraintStart_toStartOf="@+id/textHour"
-            app:layout_constraintTop_toBottomOf="@+id/textHour" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/linearLayout"

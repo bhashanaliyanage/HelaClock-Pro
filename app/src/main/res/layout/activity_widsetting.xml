@@ -83,73 +83,16 @@
     </LinearLayout>
 
 
-    <ImageView
-        android:id="@+id/ivClockBG"
+    <FrameLayout
+        android:id="@+id/widgetPreviewContainer"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="220dp"
         android:layout_marginTop="27dp"
-        android:layout_marginBottom="28dp"
-        android:background="@drawable/sndbackgrund"
-        android:contentDescription="@string/background_image"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
-    <ImageView
-        android:id="@+id/backcolourimag"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="17dp"
-        android:layout_marginBottom="17dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/ivClockBG"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ivClockBG" />
-
-    <ImageView
-        android:id="@+id/hintImage"
-        android:layout_width="@dimen/_80sdp"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivClockBG"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ivClockBG" />
-
-    <ahmadrosid.com.lib.CustomTextView
-        android:id="@+id/textAM_PM"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="23dp"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_23sdp"
-        app:fontPath="@string/sinhala"
-        app:layout_constraintStart_toStartOf="@+id/backcolourimag"
-        app:layout_constraintTop_toTopOf="@+id/backcolourimag" />
-
-    <ahmadrosid.com.lib.CustomTextView
-        android:id="@+id/textHour"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_45sdp"
-        app:fontPath="@string/sinhala"
-        app:layout_constraintStart_toStartOf="@+id/textAM_PM"
-        app:layout_constraintTop_toTopOf="@+id/textAM_PM" />
-
-    <ahmadrosid.com.lib.CustomTextView
-        android:id="@+id/textMinutes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="253dp"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_29sdp"
-        app:fontPath="@string/sinhala"
-        app:layout_constraintStart_toStartOf="@+id/textAM_PM"
-        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

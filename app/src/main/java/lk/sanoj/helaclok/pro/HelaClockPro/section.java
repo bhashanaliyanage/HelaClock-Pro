@@ -13,15 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.FrameLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
-import lk.sanoj.helaclok.pro.HelaClockPro.Controller.SinhalaTimeConverter;
-import lk.sanoj.helaclok.pro.HelaClockPro.Models.Clock;
 
 public class section extends AppCompatActivity {
     // private RemoteViews views;
@@ -31,6 +28,18 @@ public class section extends AppCompatActivity {
     private CheckBox cbGrunge;
     private CheckBox cbRock;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private FrameLayout widgetPreviewContainer;
+    private final Runnable previewUpdateTask = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                ClockWidgetRenderer.renderPreview(section.this, widgetPreviewContainer);
+            } catch (Exception e) {
+                Log.e("section", "Unable to render widget preview", e);
+            }
+            handler.postDelayed(this, 1000);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,92 +48,8 @@ public class section extends AppCompatActivity {
 
         Button btn2 = findViewById(R.id.button3);
 
-        final TextView textMeridiem = findViewById(R.id.textAM_PM);
-        final TextView textHour = findViewById(R.id.textHour);
-        final TextView textMinutes = findViewById(R.id.textMinutes);
-        final ImageView hintImage = findViewById(R.id.hintImage);
-
-        final Clock clock = new Clock();
-        SinhalaTimeConverter converter = new SinhalaTimeConverter(clock.getTime());
-
-        textHour.setText(converter.getHour());
-        textMinutes.setText(converter.getMinutes());
-        textMeridiem.setText(converter.getMeridiem());
-
-        // Update the clock
-        // Update UI elements
-        // Update image based on time
-        // Schedule the next update
-        // Repeat every second
-        Runnable updateTask = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    clock.updateTime(); // Update the clock
-                    SinhalaTimeConverter converter1 = new SinhalaTimeConverter(clock.getTime());
-
-                    Log.d("Meridiem", clock.getTime().getMeridiem());
-
-                    // Update UI elements
-                    textHour.setText(converter1.getHour());
-                    textMinutes.setText(converter1.getMinutes());
-                    textMeridiem.setText(converter1.getMeridiem());
-
-                    // Update image based on time
-                    if (clock.getTime().getMeridiem().equals("PM")) {
-                        hintImage.setImageResource(R.drawable.night);
-                    } else {
-                        hintImage.setImageResource(R.drawable.morningimg);
-                    }
-                } catch (Exception e) {
-                    Log.e("Error in section.java", e.getMessage(), e);
-                }
-
-                // Schedule the next update
-                handler.postDelayed(this, 1000); // Repeat every second
-            }
-        };
-
-        // Start the periodic task
-        handler.post(updateTask);
-
-        /*Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    while (!isInterrupted()) {
-                        Thread.sleep(1000);
-                        runOnUiThread(() -> {
-                            try {
-                                clock.updateTime();
-                                // clock.setTime("11:30:AM");
-                                SinhalaTimeConverter converter1 = new SinhalaTimeConverter(clock.getTime());
-
-                                Log.d("Meridiem", clock.getTime().getMeridiem());
-
-                                textHour.setText(converter1.getHour());
-                                textMinutes.setText(converter1.getMinutes());
-                                textMeridiem.setText(converter1.getMeridiem());
-                                if (clock.getTime().getMeridiem().equals("PM")) {
-                                    hintImage.setImageResource(R.drawable.night);
-                                } else {
-                                    hintImage.setImageResource(R.drawable.morningimg);
-                                }
-                            } catch (Exception e) {
-                                Log.e("Error in section.java", Objects.requireNonNull(e.getMessage()));
-                            }
-                        });
-                    }
-                } catch (InterruptedException e) {
-                    Log.e("Error in section.java", Objects.requireNonNull(e.getMessage()));
-                }
-            }
-        };
-
-        t.start();*/
-
-        // TODO: Make the hint image changeable.
-        // TODO: Enable disable the hint image according to user preferences
+        widgetPreviewContainer = findViewById(R.id.widgetPreviewContainer);
+        handler.post(previewUpdateTask);
 
         btn2.setOnClickListener(v -> {
             Intent mainIntent = new Intent(section.this, WidgetSetting.class);
@@ -176,6 +101,12 @@ public class section extends AppCompatActivity {
             editor.apply();
             cbBlank.setChecked(true);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        handler.removeCallbacks(previewUpdateTask);
+        super.onDestroy();
     }
 
     public void clockSettings(View view) {

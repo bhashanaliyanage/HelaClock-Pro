@@ -13,36 +13,36 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
-import ahmadrosid.com.lib.CustomTextView;
-import lk.sanoj.helaclok.pro.HelaClockPro.Controller.SinhalaTimeConverter;
-import lk.sanoj.helaclok.pro.HelaClockPro.Models.Clock;
 import top.defaults.colorpicker.ColorPickerView;
 
 
 public class WidgetSetting extends Activity {
 
-    private CustomTextView textMeridiem;
-    private CustomTextView textHour;
-    private CustomTextView textMinutes;
+    private FrameLayout previewContainer;
     private Button btnHint;
-    private ImageView hintImage;
     private Dialog dialog;
     private ColorPickerView colorPickerView;
     private EditText colorHex;
     private boolean hintStatus;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Runnable previewUpdateTask = new Runnable() {
+        @Override
+        public void run() {
+            refreshPreview();
+            handler.postDelayed(this, 1000);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,116 +51,16 @@ public class WidgetSetting extends Activity {
         setContentView(R.layout.activity_widsetting);
 
         Button btnTextColor = findViewById(R.id.textcolour);
-        textMeridiem = findViewById(R.id.textAM_PM);
-        textHour = findViewById(R.id.textHour);
-        textMinutes = findViewById(R.id.textMinutes);
-        ImageView clockBG = findViewById(R.id.ivClockBG);
-        ImageView backgroundImage = findViewById(R.id.backcolourimag);
-        hintImage = findViewById(R.id.hintImage);
+        previewContainer = findViewById(R.id.widgetPreviewContainer);
         Button clearSettings = findViewById(R.id.reset);
         btnHint = findViewById(R.id.clnoty);
 
-        // Get User Preferences for Clock Theme
+        // Load the saved text color for the picker.
         SharedPreferences prefs = this.getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
-        String themes = prefs.getString("ThemeName", null);
         int textColor = prefs.getInt("textc", 0);
         String initialHexColor = String.format("#%06X", (0xFFFFFF & textColor));
 
-        if (themes != null) {
-            switch (themes) {
-                case "AssXSDrrfgssdbh":
-                    // show.setImageResource(BLA);
-                    break;
-                case "WdhbgfhghhdwaSSDfgdfg":
-                    clockBG.setImageResource(R.drawable.sndbackgrund);
-                    break;
-                case "HlknsdakjKJHfdskljhs":
-                    clockBG.setImageResource(R.drawable.sndsback);
-                    break;
-                case "dAsdsQWdsfdSDfdsfS":
-                    clockBG.setImageResource(R.drawable.lastbck);
-                    break;
-            }
-        }
-
-        final Clock clock = new Clock();
-        SinhalaTimeConverter converter = new SinhalaTimeConverter(clock.getTime());
-
-        textHour.setText(converter.getHour());
-        textMinutes.setText(converter.getMinutes());
-        textMeridiem.setText(converter.getMeridiem());
-
-        // Update the clock
-        // Update UI elements
-        // Update image based on time
-        // Schedule the next update
-        // Repeat every second
-        Runnable updateTask = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    clock.updateTime(); // Update the clock
-                    SinhalaTimeConverter converter1 = new SinhalaTimeConverter(clock.getTime());
-
-                    Log.d("Meridiem", clock.getTime().getMeridiem());
-
-                    // Update UI elements
-                    textHour.setText(converter1.getHour());
-                    textMinutes.setText(converter1.getMinutes());
-                    textMeridiem.setText(converter1.getMeridiem());
-
-                    // Update image based on time
-                    if (clock.getTime().getMeridiem().equals("PM")) {
-                        hintImage.setImageResource(R.drawable.night);
-                    } else {
-                        hintImage.setImageResource(R.drawable.morningimg);
-                    }
-                } catch (Exception e) {
-                    Log.e("Error in section.java", e.getMessage(), e);
-                }
-
-                // Schedule the next update
-                handler.postDelayed(this, 1000); // Repeat every second
-            }
-        };
-
-        // Start the periodic task
-        handler.post(updateTask);
-
-        /*Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    while (!isInterrupted()) {
-                        Thread.sleep(1000);
-                        runOnUiThread(() -> {
-                            try {
-                                clock.updateTime();
-                                // clock.setTime("11:30:AM");
-                                SinhalaTimeConverter converter1 = new SinhalaTimeConverter(clock.getTime());
-
-                                Log.d("Meridiem", clock.getTime().getMeridiem());
-
-                                textHour.setText(converter1.getHour());
-                                textMinutes.setText(converter1.getMinutes());
-                                textMeridiem.setText(converter1.getMeridiem());
-                                if (clock.getTime().getMeridiem().equals("PM")) {
-                                    hintImage.setImageResource(R.drawable.night);
-                                } else {
-                                    hintImage.setImageResource(R.drawable.morningimg);
-                                }
-                            } catch (Exception e) {
-                                Log.e("Error in section.java", Objects.requireNonNull(e.getMessage()));
-                            }
-                        });
-                    }
-                } catch (InterruptedException e) {
-                    Log.e("Error in section.java", Objects.requireNonNull(e.getMessage()));
-                }
-            }
-        };
-
-        t.start();*/
+        handler.post(previewUpdateTask);
 
         dialog = new Dialog(WidgetSetting.this);
         dialog.setContentView(R.layout.color_picker);
@@ -180,9 +80,6 @@ public class WidgetSetting extends Activity {
             int color = colorPickerView.getColor();
             String hexColor = String.format("#%06X", (0xFFFFFF & color));
             // codeview.setText(hexColor);
-            textMeridiem.setTextColor(color);
-            textHour.setTextColor(color);
-            textMinutes.setTextColor(color);
             SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
             editor.putString("colour", hexColor);
             editor.putInt("textc", color);
@@ -190,7 +87,7 @@ public class WidgetSetting extends Activity {
             System.out.println("Color: " + hexColor);
             colorHex.setText(hexColor);
             dialog.dismiss();
-            hintImage.setColorFilter(color);
+            refreshPreview();
             Snackbar.make(WidgetSetting.this.findViewById(R.id.linearLayout1), "Applied Color: " + hexColor, Snackbar.LENGTH_SHORT).show();
         });
 
@@ -231,31 +128,11 @@ public class WidgetSetting extends Activity {
             // int textc = prefs.getInt("textc", 0);//maintext colour
 
             //background colour code text
-            int hint = prefs.getInt("hint", 0);//hint
-            int bcolour = prefs.getInt("bcolour", 0);//backgraund colour
-
-
-            if (bcolour == 0) {
-                backgroundImage.setBackgroundColor(Color.parseColor("#74000000"));
-            } else {
-                backgroundImage.setBackgroundColor(bcolour);
-            }
-            if (textColor == 0) {
-                textMeridiem.setTextColor(Color.WHITE);
-                textHour.setTextColor(Color.WHITE);
-                textMinutes.setTextColor(Color.WHITE);
-            } else {
-                hintImage.setColorFilter(textColor);
-                textMeridiem.setTextColor(textColor);
-                textHour.setTextColor(textColor);
-                textMinutes.setTextColor(textColor);
-            }
+            int hint = prefs.getInt("hint", 0);
             if (hint == 0) {
-                hintImage.setVisibility(View.VISIBLE);
                 btnHint.setText(R.string.turn_off_hint);
                 hintStatus = true;
             } else if (hint == 1) {
-                hintImage.setVisibility(View.INVISIBLE);
                 btnHint.setText(R.string.turn_on_hint);
                 hintStatus = false;
             }
@@ -283,11 +160,10 @@ public class WidgetSetting extends Activity {
 
                 hintStatus = false;
 
-                hintImage.setVisibility(View.INVISIBLE);
-
                 SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
                 editor.putInt("hint", 1);
                 editor.apply();
+                refreshPreview();
 
                 Snackbar.make(WidgetSetting.this.findViewById(R.id.linearLayout1), "Hint Turned Off", Snackbar.LENGTH_SHORT).show();
             } else {
@@ -295,11 +171,10 @@ public class WidgetSetting extends Activity {
 
                 hintStatus = true;
 
-                hintImage.setVisibility(View.VISIBLE);
-
                 SharedPreferences.Editor editor = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).edit();
                 editor.putInt("hint", 0);
                 editor.apply();
+                refreshPreview();
 
                 Snackbar.make(WidgetSetting.this.findViewById(R.id.linearLayout1), "Hint Turned On", Snackbar.LENGTH_SHORT).show();
             }
@@ -322,6 +197,18 @@ public class WidgetSetting extends Activity {
 
     private boolean isValidHexColor(String hexColor) {
         return hexColor.matches("#([A-Fa-f0-9]{6})");
+    }
+
+    private void refreshPreview() {
+        if (previewContainer != null) {
+            ClockWidgetRenderer.renderPreview(this, previewContainer);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        handler.removeCallbacks(previewUpdateTask);
+        super.onDestroy();
     }
 
 }

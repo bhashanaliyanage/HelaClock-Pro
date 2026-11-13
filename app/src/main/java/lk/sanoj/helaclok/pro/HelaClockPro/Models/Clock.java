@@ -2,8 +2,8 @@ package lk.sanoj.helaclok.pro.HelaClockPro.Models;
 
 import android.util.Log;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class Clock {
@@ -20,21 +20,10 @@ public class Clock {
     }
 
     public void updateTime() {
-        LocalTime now;
-        DateTimeFormatter hourFormatter;
-        DateTimeFormatter minuteFormatter;
-        DateTimeFormatter amPmFormatter;
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            now = LocalTime.now();
-            hourFormatter = DateTimeFormatter.ofPattern("hh", Locale.US);
-            minuteFormatter = DateTimeFormatter.ofPattern("mm", Locale.US);
-            amPmFormatter = DateTimeFormatter.ofPattern("a", Locale.US);
-
-            hours = now.format(hourFormatter);
-            minutes = now.format(minuteFormatter);
-            meridiem = now.format(amPmFormatter);
-        }
+        Date now = new Date();
+        hours = new SimpleDateFormat("hh", Locale.US).format(now);
+        minutes = new SimpleDateFormat("mm", Locale.US).format(now);
+        meridiem = new SimpleDateFormat("a", Locale.US).format(now);
     }
 
     public void setTime(String time) {
