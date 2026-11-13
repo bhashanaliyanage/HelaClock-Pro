@@ -504,15 +504,17 @@ public class ClockWidget extends AppWidgetProvider {
             return null;
         }
 
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        // The source images live in drawable/ (mdpi), so intrinsic dimensions
+        // are density-scaled and can create multi-megabyte RemoteViews bitmaps.
+        // Match the status ImageView's 129dp width and widget's 220dp height.
+        float density = context.getResources().getDisplayMetrics().density;
+        int width = Math.round(129 * density);
+        int height = Math.round(220 * density);
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
         drawable.draw(canvas);
-
-        Paint paint = new Paint();
-        paint.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, 0, 0, paint);
 
         return bitmap;
     }
