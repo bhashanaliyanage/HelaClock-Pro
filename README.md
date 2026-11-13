@@ -6,6 +6,20 @@
 
 #### [Download](https://github.com/bhashanaliyanage/HelaClock-Pro/releases/)
 
+## Build
+
+Install JDK 17 and Android SDK Platform 37, and configure the Android SDK path in
+`local.properties` or `ANDROID_HOME`. Then build the debug APK with:
+
+```sh
+./gradlew assembleDebug
+```
+
+The APK is written to `app/build/outputs/apk/debug/app-debug.apk`. The app supports
+Android 7.0 (API 24) and newer. On Android 12 and later, Widget Settings offers
+access to precise alarms when the widget needs it; without access, Android may
+delay updates.
+
 ## Recent Updates by Bhashana (August 2024)
 - Main screen now have a preview of the widget
 - App now have a new UI

@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -53,6 +55,40 @@ public class ClockWidgetRendererTest {
             assertEquals(Color.WHITE, ClockWidgetRenderer.resolveColor(context,
                     ClockWidgetRenderer.COLOR_MODE_SYSTEM, Color.RED));
         }
+    }
+
+    @Test
+    public void existingCustomColorIsPreservedUnlessModeWasExplicitlyChosen() {
+        Context base = InstrumentationRegistry.getTargetContext();
+        SharedPreferences isolated = base.getSharedPreferences("widget_migration_test", Context.MODE_PRIVATE);
+        Context context = new ContextWrapper(base) {
+            @Override public SharedPreferences getSharedPreferences(String name, int mode) {
+                return isolated;
+            }
+        };
+        try {
+            isolated.edit().clear().putInt("textc", Color.RED).commit();
+            assertEquals(ClockWidgetRenderer.COLOR_MODE_CUSTOM,
+                    ClockWidgetRenderer.getConfiguredColorMode(context));
+            assertEquals(Color.RED, ClockWidgetRenderer.resolveConfiguredColor(context));
+            isolated.edit().putInt("clock_color_mode", ClockWidgetRenderer.COLOR_MODE_WHITE).commit();
+            assertEquals(Color.WHITE, ClockWidgetRenderer.resolveConfiguredColor(context));
+            assertEquals(Color.RED, isolated.getInt("textc", 0));
+        } finally {
+            isolated.edit().clear().commit();
+        }
+    }
+
+    @Test
+    public void clockWordsFollowTheExistingWidgetWording() {
+        String[] morning = ClockWidgetRenderer.clockWords(new Time("06", "15", "AM"));
+        assertEquals("වේලාව පෙරවරු", morning[0]);
+        assertEquals("හය පසුවී", morning[1]);
+        assertEquals("විනාඩි පහ ලොවයි", morning[2]);
+        String[] noon = ClockWidgetRenderer.clockWords(new Time("12", "00", "PM"));
+        assertEquals("වේලාව පස්වරු", noon[0]);
+        assertEquals("දොළහ පසුවී", noon[1]);
+        assertEquals("තත්පර කීපයක් පමනයි", noon[2]);
     }
 
     @Test

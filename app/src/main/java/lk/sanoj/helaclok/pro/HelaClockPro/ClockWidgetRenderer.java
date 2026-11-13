@@ -127,6 +127,13 @@ final class ClockWidgetRenderer {
         return Color.WHITE;
     }
 
+    static String[] clockWords(Time time) {
+        boolean am = "AM".equalsIgnoreCase(time.getMeridiem());
+        return new String[]{am ? "වේලාව පෙරවරු" : "වේලාව පස්වරු",
+                HOUR_TEXTS[Integer.parseInt(time.getHours()) % 12],
+                MINUTE_TEXTS[Integer.parseInt(time.getMinutes())]};
+    }
+
     static RemoteViews createRemoteViews(Context context) {
         ClockWidgetRenderer renderer = new ClockWidgetRenderer(context);
         RemoteViews views = new RemoteViews(renderer.context.getPackageName(), R.layout.widget_canvas);
