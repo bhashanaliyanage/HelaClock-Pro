@@ -18,28 +18,40 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
+import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -49,6 +61,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.onesignal.OneSignal
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import lk.sanoj.helaclok.pro.HelaClockPro.Models.Clock
 import top.defaults.colorpicker.ColorPickerView
 
@@ -84,6 +97,8 @@ private fun HelaApp(resumeCount: Int) {
         onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
     }
     var page by rememberSaveable { mutableStateOf("home") }
+    var backgroundExpanded by rememberSaveable { mutableStateOf(false) }
+    var selectorSession by rememberSaveable { mutableIntStateOf(0) }
     var notificationRevision by remember { mutableIntStateOf(0) }
     val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
         notificationRevision++
@@ -98,33 +113,143 @@ private fun HelaApp(resumeCount: Int) {
             isAppearanceLightNavigationBars = !dark && page != "clock"
         }
     }
-    BackHandler(page != "home") { page = "home" }
+    BackHandler(page != "home" || backgroundExpanded) {
+        if (page == "home" && backgroundExpanded) backgroundExpanded = false
+        else { backgroundExpanded = false; page = "home" }
+    }
     MaterialExpressiveTheme(colorScheme = colors) {
+        val screenEnterSpec = MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
+        val screenExitSpec = MaterialTheme.motionScheme.fastEffectsSpec<Float>()
         if (page == "clock") {
             DeskClock(prefs, revision)
         } else {
-            Scaffold(topBar = {
-                TopAppBar(title = { Text(if (page == "home") "HelaClock Pro" else if (page == "widget") "Widget settings" else "Desk clock appearance") },
-                    navigationIcon = { if (page != "home") TextButton(onClick = { page = "home" }) { Text("Back") } })
-            }) { padding ->
-                Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    when (page) {
-                        "home" -> {
-                            Text("සිංහල ඔරලෝසුව", style = MaterialTheme.typography.headlineSmall)
-                            WidgetPreview(revision)
-                            Button(onClick = { page = "clock" }, modifier = Modifier.fillMaxWidth()) { Text("Open desk clock") }
-                            FilledTonalButton(onClick = { page = "deskSettings" }, modifier = Modifier.fillMaxWidth()) { Text("Desk clock appearance") }
-                            FilledTonalButton(onClick = { page = "widget" }, modifier = Modifier.fillMaxWidth()) { Text("Widget settings") }
-                            if (!canNotify) OutlinedButton(onClick = {
+            Scaffold(
+                topBar = { TopAppBar(title = { Text(if (page == "home") "HelaClock Pro" else "Settings") }) },
+                bottomBar = {
+                    NavigationBar {
+                        NavigationBarItem(
+                            selected = page == "home",
+                            onClick = { backgroundExpanded = false; page = "home" },
+                            icon = { Text("⌂", style = MaterialTheme.typography.titleLarge) },
+                            label = { Text("Home") }
+                        )
+                        NavigationBarItem(
+                            selected = page != "home",
+                            onClick = { backgroundExpanded = false; page = "settings" },
+                            icon = { Text("⚙", style = MaterialTheme.typography.titleLarge) },
+                            label = { Text("Settings") }
+                        )
+                    }
+                }
+            ) { padding ->
+                AnimatedContent(
+                    targetState = page,
+                    modifier = Modifier.fillMaxSize().padding(padding),
+                    transitionSpec = { fadeIn(screenEnterSpec) togetherWith fadeOut(screenExitSpec) },
+                    label = "screen transition"
+                ) { currentPage ->
+                    if (currentPage == "home") {
+                        HomeScreen(
+                            prefs = prefs,
+                            revision = revision,
+                            expanded = backgroundExpanded,
+                            selectorSession = selectorSession,
+                            onToggleSelector = {
+                                if (!backgroundExpanded) selectorSession++
+                                backgroundExpanded = !backgroundExpanded
+                            },
+                            onCloseSelector = { backgroundExpanded = false },
+                            onOpenClock = { backgroundExpanded = false; page = "clock" },
+                            canNotify = canNotify,
+                            onEnableNotifications = {
                                 if (Build.VERSION.SDK_INT >= 33) notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                            }, modifier = Modifier.fillMaxWidth()) { Text("Enable notifications") }
+                            }
+                        )
+                    } else {
+                        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+                            .padding(horizontal = 20.dp, vertical = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                            WidgetSettings(prefs, revision, resumeCount)
                         }
-                        "widget" -> WidgetSettings(prefs, revision, resumeCount)
-                        else -> DeskSettings(prefs, revision)
                     }
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeScreen(
+    prefs: SharedPreferences,
+    revision: Int,
+    expanded: Boolean,
+    selectorSession: Int,
+    onToggleSelector: () -> Unit,
+    onCloseSelector: () -> Unit,
+    onOpenClock: () -> Unit,
+    canNotify: Boolean,
+    onEnableNotifications: () -> Unit
+) {
+    val scroll = rememberScrollState()
+    LaunchedEffect(expanded, scroll.maxValue) {
+        if (expanded) scroll.animateScrollTo(scroll.maxValue)
+    }
+    val rotation by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
+        label = "background selector chevron"
+    )
+    Column(Modifier.fillMaxSize()) {
+        Column(
+            Modifier.weight(1f).fillMaxWidth().verticalScroll(scroll)
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            WidgetPreview(revision)
+            if (!canNotify) OutlinedButton(onClick = onEnableNotifications, modifier = Modifier.fillMaxWidth()) {
+                Text("Enable notifications")
+            }
+            AnimatedVisibility(
+                visible = expanded,
+                enter = expandVertically(animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec()) +
+                    fadeIn(animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec()),
+                exit = shrinkVertically(animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec()) +
+                    fadeOut(animationSpec = MaterialTheme.motionScheme.fastEffectsSpec())
+            ) {
+                key(selectorSession) {
+                    DeskAppearanceSelector(
+                        initialKey = prefs.getString("ThemeName", deskThemes[0].first) ?: deskThemes[0].first,
+                        onDismiss = onCloseSelector,
+                        onApply = { prefs.edit().putString("ThemeName", it).apply(); onCloseSelector() }
+                    )
+                }
+            }
+        }
+        val buttonHeight = SplitButtonDefaults.LargeContainerHeight
+        BoxWithConstraints(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
+        val trailingWidth = minOf(72.dp, maxWidth * 0.3f)
+        SplitButtonLayout(
+            modifier = Modifier.fillMaxWidth(),
+            leadingButton = {
+                SplitButtonDefaults.LeadingButton(
+                    onClick = onOpenClock,
+                    modifier = Modifier.width((maxWidth - trailingWidth - SplitButtonDefaults.Spacing).coerceAtLeast(0.dp)).height(buttonHeight),
+                    shapes = SplitButtonDefaults.leadingButtonShapesFor(buttonHeight),
+                    contentPadding = SplitButtonDefaults.leadingButtonContentPaddingFor(buttonHeight)
+                ) { Text("Open desk clock", style = MaterialTheme.typography.titleMedium, maxLines = 1) }
+            },
+            trailingButton = {
+                SplitButtonDefaults.TrailingButton(
+                    checked = expanded,
+                    onCheckedChange = { onToggleSelector() },
+                    modifier = Modifier.width(trailingWidth).height(buttonHeight).testTag("background-selector-toggle")
+                        .semantics { contentDescription = if (expanded) "Collapse background selection" else "Choose desk clock background" },
+                    shapes = SplitButtonDefaults.trailingButtonShapesFor(buttonHeight),
+                    contentPadding = SplitButtonDefaults.trailingButtonContentPaddingFor(buttonHeight)
+                ) { Text("⌄", Modifier.rotate(rotation), style = MaterialTheme.typography.headlineMedium) }
+            }
+        )
         }
     }
 }
@@ -167,18 +292,19 @@ private fun WidgetSettings(prefs: SharedPreferences, revision: Int, resumeCount:
         add(ClockWidgetRenderer.COLOR_MODE_CUSTOM to "Custom")
         add(ClockWidgetRenderer.COLOR_MODE_WHITE to "White")
     }
-    Column(Modifier.selectableGroup()) {
-      choices.forEach { (value, label) ->
-        Row(Modifier.fillMaxWidth().selectable(selected = mode == value, role = Role.RadioButton, onClick = {
-            prefs.edit().putInt("clock_color_mode", value).apply()
-            ClockWidget.refreshAll(context)
-            if (value == ClockWidgetRenderer.COLOR_MODE_CUSTOM) showPicker = true
-        }).padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(selected = mode == value, onClick = null)
-            Spacer(Modifier.width(12.dp))
-            Text(label)
+    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+        choices.forEachIndexed { index, (value, label) ->
+            SegmentedButton(
+                selected = mode == value,
+                onClick = {
+                    prefs.edit().putInt("clock_color_mode", value).apply()
+                    ClockWidget.refreshAll(context)
+                    if (value == ClockWidgetRenderer.COLOR_MODE_CUSTOM) showPicker = true
+                },
+                shape = SegmentedButtonDefaults.itemShape(index = index, count = choices.size),
+                label = { Text(label, maxLines = 1) }
+            )
         }
-      }
     }
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text("Show hint image", Modifier.weight(1f))
@@ -229,21 +355,77 @@ private fun ColorDialog(initial: Int, onDismiss: () -> Unit, onSave: (Int) -> Un
 private val deskThemes = listOf("AssXSDrrfgssdbh" to "Blank", "WdhbgfhghhdwaSSDfgdfg" to "Pattern",
     "HlknsdakjKJHfdskljhs" to "Grunge", "dAsdsQWdsfdSDfdsfS" to "Rock wall")
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
-private fun DeskSettings(prefs: SharedPreferences, revision: Int) {
-    @Suppress("UNUSED_VARIABLE") val changed = revision
-    val selected = prefs.getString("ThemeName", deskThemes[0].first)
-    Text("Choose a background", style = MaterialTheme.typography.titleMedium)
-    Column(Modifier.selectableGroup()) {
-      deskThemes.forEach { (key, label) ->
-        Row(Modifier.fillMaxWidth().selectable(selected = selected == key, role = Role.RadioButton,
-            onClick = { prefs.edit().putString("ThemeName", key).apply() })
-            .padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(selected = selected == key, onClick = null)
-            Spacer(Modifier.width(12.dp)); Text(label)
+private fun DeskAppearanceSelector(initialKey: String, onDismiss: () -> Unit, onApply: (String) -> Unit) {
+    var selectedIndex by rememberSaveable { mutableIntStateOf(deskThemes.indexOfFirst { it.first == initialKey }.coerceAtLeast(0)) }
+    val carouselState = rememberCarouselState(initialItem = selectedIndex) { deskThemes.size }
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(carouselState.currentItem) { selectedIndex = carouselState.currentItem }
+
+    Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
+        Column(Modifier.fillMaxWidth().padding(vertical = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("Choose background", style = MaterialTheme.typography.titleLarge)
+                Text("Swipe through the desk clock styles", style = MaterialTheme.typography.bodyMedium)
+            }
+            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                HorizontalUncontainedCarousel(
+                    state = carouselState,
+                    itemWidth = minOf(248.dp, maxWidth - 40.dp).coerceAtLeast(1.dp),
+                    itemSpacing = 12.dp,
+                    contentPadding = PaddingValues(horizontal = 20.dp),
+                    modifier = Modifier.height(200.dp).testTag("desk-background-carousel")
+                ) { index ->
+                    val (key, label) = deskThemes[index]
+                    val selected = selectedIndex == index
+                    Surface(
+                        onClick = { coroutineScope.launch { carouselState.animateScrollToItem(index) } },
+                        modifier = Modifier.fillMaxSize().then(if (selected) Modifier.padding(2.dp) else Modifier),
+                        shape = RoundedCornerShape(28.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        border = if (selected) androidx.compose.foundation.BorderStroke(3.dp, MaterialTheme.colorScheme.primary) else null
+                    ) {
+                        Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            DeskClockSample(key, Modifier.weight(1f).fillMaxWidth())
+                            Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                Text(label, Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                                if (selected) Text("Selected", color = MaterialTheme.colorScheme.primary,
+                                    style = MaterialTheme.typography.labelMedium)
+                            }
+                        }
+                    }
+                }
+            }
+            Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.End) {
+                TextButton(onClick = onDismiss) { Text("Cancel") }
+                Spacer(Modifier.width(8.dp))
+                Button(onClick = { onApply(deskThemes[selectedIndex].first) }) { Text("Apply") }
+            }
         }
-      }
     }
+}
+
+@Composable
+private fun DeskClockSample(key: String, modifier: Modifier = Modifier) {
+    val drawable = deskBackgroundDrawable(key)
+    Box(modifier.background(Color.Black, RoundedCornerShape(20.dp)), contentAlignment = Alignment.Center) {
+        if (drawable != null) {
+            Image(painterResource(drawable), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("පෙ.ව. හයයි", color = Color.White, style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center, maxLines = 1)
+            Text("6:00", color = Color.White, style = MaterialTheme.typography.labelMedium)
+        }
+    }
+}
+
+private fun deskBackgroundDrawable(key: String): Int? = when (key) {
+    deskThemes[1].first -> R.drawable.sndbackgrund
+    deskThemes[2].first -> R.drawable.sndsback
+    deskThemes[3].first -> R.drawable.lastbck
+    else -> null
 }
 
 @Composable
